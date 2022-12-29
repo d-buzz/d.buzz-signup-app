@@ -1,0 +1,132 @@
+import moment from 'moment'
+import { useEffect, useState } from 'react'
+import BackIcon from '../../assets/back-icon.svg'
+import Button from '../Button'
+import InputField from '../InputField'
+import OTPCodeInput from '../OTPCodeInput'
+import PageLoading from '../PageLoading'
+
+const OTPVerificationWrapper = (props) => {
+
+	const { phone, 
+		setPhone,
+		handleRequestCode, 
+		setShowPhoneVerifier, 
+		codeRequested, 
+		submitting,
+		requestedCodeCount,
+		requestedCodeLimit,
+		setRequestedCodeLimit,
+		setConfirmationCode,
+		accountCreated,
+		handleVerifyOpt,
+		error,
+		// eslint-disable-next-line
+		confirmationResult,
+		// eslint-disable-next-line
+		canRequestCodeAgain,
+		// eslint-disable-next-line
+		setCanRequestCodeAgain,
+		// eslint-disable-next-line
+		setRequestedCodeCount,
+	} = props
+
+	const [requestedCodeAgainIn, setRequestedCodeAgainIn] = useState(0)
+
+	useEffect(() => {
+		const requestCodeLimitDateTime = localStorage.getItem('requestCodeLimitDateTime')
+		const elapsedTime = moment().diff(requestCodeLimitDateTime, 'minutes')
+
+		if(elapsedTime > 30) {
+			localStorage.clear()
+		}
+	}, [])
+
+	useEffect(() => {
+		var timeLeft = 15
+		if(requestedCodeCount > 0 && requestedCodeCount < 3) {
+			const timer = setInterval(() => {
+				timeLeft -= 1
+				setRequestedCodeAgainIn(timeLeft)
+				if(timeLeft === 0){
+					clearInterval(timer)
+				}
+			}, 1000)
+		}
+	}, [requestedCodeCount])
+
+	useEffect(() => {
+		if(requestedCodeCount === 3) {
+			setRequestedCodeLimit(true)
+			localStorage.setItem('requestCodeLimit', 3)
+			localStorage.setItem('requestCodeLimitDateTime', moment().format())
+		}
+		// eslint-disable-next-line
+	}, [requestedCodeCount])
+
+	const handleRequestOTPCode = () => {
+		setRequestedCodeAgainIn(15)
+		handleRequestCode()
+	}
+
+	const getErrorMessage = (err) => {
+		switch(err) {
+			case 'Firebase: Error (auth/invalid-verification-code).':
+				return 'The entered code is invalid.'
+			case 'Firebase: Error (auth/code-expired).':
+				return 'The code is expired, please try again.'
+			case 'Firebase: Error (auth/too-many-requests).':
+				return 'Too many requests, please try again later.'
+			default:
+				return 'Unexpected error: ' + err
+		}
+	}
+
+	return (
+		<div className="mt-[100px] h-full flex flex-col justify-center items-center">
+			<div className="flex flex-col items-start">
+				<div className="flex items-center justify-center select-none cursor-pointer hover:opacity-50 transition-all" onClick={() => setShowPhoneVerifier(false)}>
+					<img src={BackIcon} alt='back icon' className="h-[30px] pb-[2px] pr-[2px]" />
+					<span className="pl-2 text-[#e61c34] font-bold">Go back</span>
+				</div>
+				<div className="flex flex-col items-center justify-center">
+					<span className="mt-[20px] text-[22px] md:text-[26px] lg:text-[32px] font-bold">One Time Passcode Verification</span>
+					{
+						!codeRequested && !accountCreated
+						?
+							<InputField placeholder='Enter your phone number' className='w-[100%] md:w-[400px] lg:w-[400px] mt-4 mb-2 text-[20px] md:text-[30px] lg:text-[30px]' type='phone' value={phone} onChange={setPhone} disabled={submitting || codeRequested} />
+							:
+							<OTPCodeInput handleVerifyOpt={handleVerifyOpt} setConfirmationCode={setConfirmationCode}/>
+					}
+					{
+						!codeRequested && !accountCreated
+						?
+							<div className='relative mt-4 flex flex-col items-center justify-center'>
+								<Button variant='fill' onClick={handleRequestOTPCode} disabled={requestedCodeLimit || error === 'Firebase: Error (auth/too-many-requests).'} loading={submitting}>SEND CODE</Button>
+								{
+									requestedCodeCount > 0 && requestedCodeAgainIn > 0 &&
+									<span className='mt-4 md:mt-0 lg:mt-0 md:absolute lg:md:absolute right-[-120px] text-[12px] text-gray-400'>Request another <br /> code in {requestedCodeAgainIn}</span>
+								}
+								{
+									requestedCodeLimit && requestedCodeAgainIn === 0 &&
+									<span className='mt-4 font-medium text-center'>You've already requested code more than 3 times, <br /> please check back later in 30 minutes.</span>
+								}
+							</div>
+						:
+							<Button className='mt-4' variant='fill' onClick={handleRequestOTPCode} disabled={submitting} loading={submitting}>VERIFY CODE</Button>
+					}
+					{
+						accountCreated &&
+						<PageLoading />
+					}
+					{
+						error &&
+							<span className='mt-4 text-[#e61c34] font-semibold'>{getErrorMessage(error)}</span>
+					}
+				</div>
+			</div>
+		</div>
+	)
+}
+
+export default OTPVerificationWrapper

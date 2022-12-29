@@ -1,0 +1,23 @@
+{
+  "provider": "dbuzz",
+  "account": "dbuzz",
+  "activeKey": "5K6yGu6gugkEumRDbwN4K7GStbizPYym4gVH5ywTZqpCECNhc58",
+  "accountLog": "dbuzz",
+  "activeKeyLog": "5K6yGu6gugkEumRDbwN4K7GStbizPYym4gVH5ywTZqpCECNhc58",
+  "rcThreshold": 30,
+  "creator_instances": [],
+  "fee": {
+    "referrer": 300,
+    "creator": 100,
+    "provider": 100
+  },
+  "badgeOne": "dbuzz",
+  "activeKeyBadgeOne": "5K6yGu6gugkEumRDbwN4K7GStbizPYym4gVH5ywTZqpCECNhc58",
+  "badgeTwo": "dbuzz",
+  "activeKeyBadgeTwo": "5K6yGu6gugkEumRDbwN4K7GStbizPYym4gVH5ywTZqpCECNhc58",
+  "badgeThree": "dbuzz",
+  "activeKeyBadgeThree": "5K6yGu6gugkEumRDbwN4K7GStbizPYym4gVH5ywTZqpCECNhc58",
+  "ticketApiKey": "YOUR-TICKET-API-KEY",
+	"rcDelegation": 26988274803,
+  "ipQualityScorePrivateKey": "INSERT-PRIVTE-KEY"
+}
