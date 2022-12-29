@@ -121,7 +121,7 @@ const OTPVerificationWrapper = (props) => {
 					}
 					{
 						error &&
-							<span className='mt-4 text-[#e61c34] font-semibold'>{getErrorMessage(error)}</span>
+							<span className='w-[80%] md:w-[fit] lg:w-[fit] mt-4 text-[#e61c34] font-semibold'>{getErrorMessage(error)}</span>
 					}
 				</div>
 			</div>
