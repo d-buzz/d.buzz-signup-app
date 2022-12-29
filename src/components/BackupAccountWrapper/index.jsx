@@ -322,7 +322,7 @@ const BackupAccountWrapper = (props) => {
 					<label className="flex items-start justify-start gap-2 mt-6 w-[85%] md:w-[570px] lg:w-[760px] checkbox-container" style={{ cursor: !confirmed ? 'not-allowed' : 'pointer' }}>
 						<input type="checkbox" id="keys" checked={backupConfirmed} onChange={() => setBackupConfirmed(true)} disabled={!confirmed}/>
 						<span className="checkmark" style={{ opacity: !confirmed ? '50%' : '100%', cursor: !confirmed ? 'not-allowed' : 'pointer' }}/>
-						<div htmlFor="keys" className="ml-4 text-[16px] md:text-[22px] lg:text-[22px]" style={{ cursor: !confirmed ? 'not-allowed' : 'pointer' }}>I (the soon to be owner of @${account.username}) declare that I understand the requirement of safely securing these private keys. I understand that neither HiveOnboard nor any other entity on this planet is capable of restoring or changing these keys if lost. Meaning I really did save these keys in a safe location that I will be able to find later.</div>
+						<div htmlFor="keys" className="ml-4 text-[16px] md:text-[22px] lg:text-[22px]" style={{ cursor: !confirmed ? 'not-allowed' : 'pointer' }}>I (the soon to be owner of @{account.username}) declare that I understand the requirement of safely securing these private keys. I understand that neither HiveOnboard nor any other entity on this planet is capable of restoring or changing these keys if lost. Meaning I really did save these keys in a safe location that I will be able to find later.</div>
 					</label>
 				</div>
 				:
