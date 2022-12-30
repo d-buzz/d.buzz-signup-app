@@ -474,7 +474,7 @@ exports.checkReputation = functions.https.onCall(async (data, context) => {
 
 exports.updateDailyLimit = functions.pubsub
   .schedule("0 0 * * *")
-  .timeZone("Europe/Berlin")
+  .timeZone("Asia/Manila")
   .onRun(async (context) => {
     try {
       await db
@@ -492,7 +492,7 @@ exports.updateDailyLimit = functions.pubsub
 
 exports.claimAccounts = functions.pubsub
   .schedule("every 10 minutes")
-  .timeZone("Europe/Berlin")
+  .timeZone("Asia/Manila")
   .onRun(async (context) => {
     try {
       let ac = await client.call("rc_api", "find_rc_accounts", {
@@ -629,7 +629,7 @@ exports.claimAccounts = functions.pubsub
 
 exports.postAccountCreationReport = functions.pubsub
   .schedule("every 24 hours")
-  .timeZone("Europe/Berlin")
+  .timeZone("Asia/Manila")
   .onRun(async (context) => {
     let accountsRef = db.collection("accounts");
     let query = await accountsRef
@@ -651,9 +651,8 @@ exports.postAccountCreationReport = functions.pubsub
       "This is an automatic generated account creation report from @" +
       config.provider +
       ".\n" +
-      "![badge_poweredbyhive_dark_240.png](https://files.peakd.com/file/peakd-hive/hiveonboard/SkMbcWod-badge_powered-by-hive_dark_240.png)\n" +
-      "|Account|Referrer|Creation Time|\n|-|-|-|\n";
-    let tag = "hiveonboard";
+      "| Account | Referrer | Creation Time |\n|-|-|-|\n";
+    let tag = "dbuzz";
     let json_metadata = JSON.stringify({ tags: [tag] });
 
     query.forEach((doc) => {
@@ -661,11 +660,11 @@ exports.postAccountCreationReport = functions.pubsub
       let timestamp = new Date(account.timestamp.seconds * 1000);
       body =
         body +
-        "|@" +
+        "|@ \n" +
         account.accountName +
-        "|@" +
+        "|@ \n" +
         account.referrer +
-        "|" +
+        "| \n" +
         timestamp.toISOString() +
         "|\n";
 
