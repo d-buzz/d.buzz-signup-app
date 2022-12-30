@@ -331,9 +331,9 @@ const SignUpWrapper = (props) => {
 					<div className='flex flex-col h-[500px] w-full items-center justify-center'>
 						<div className='flex rounded-full p-6 bg-[#e31337] items-center'>
 							<span className='grid place-items-center rounded-full bg-white w-[40px] h-[40px] text-[#e31337] text-[25px] font-bold'>!</span>
-							<span className='ml-4 text-[25px] text-white font-semibold'>SERVICE UNAVAILABLE AT THE MOMENT</span>
+							<span className='ml-4 text-[14px] md:text-[25px] lg:text-[25px] text-white font-bold md:font-semibold lg:font-semibold'>SERVICE UNAVAILABLE AT THE MOMENT</span>
 						</div>
-						<div className='mt-[50px] text-[20px] font-medium'>
+						<div className='flex justify-center w-[85%] md:w-full lg:w-full mt-[50px] text-[18px] md:text-[20px] lg:text-[20px] font-medium'>
 							<span>Our daily account creation limit has been reached. <br /> Please try again tomorrow or use <a href='https://signup.hive.io' className='text-[#e31337] font-medium'>signup.hive.io</a> for other account creation options.</span>
 						</div>
 					</div>
