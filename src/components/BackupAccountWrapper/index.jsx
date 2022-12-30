@@ -293,7 +293,7 @@ const BackupAccountWrapper = (props) => {
 					<div className="mt-6 flex flex-col md:flex-row lg:flex-row justify-center items-center">
 						<Button variant='fill' onClick={downloadBackupFile} disabled={confirmed}>DOWNLOAD BACKUP</Button>
 						<span className="pt-2 pb-2 pl-2 pr-2">OR</span>
-						<Button variant='fill' onClick={copyToClipboard} disabled={confirmed}>COPY TO CLIPBOARD</Button>
+						<Button variant='fill' onClick={() => copyToClipboard(accountString)} disabled={confirmed}>COPY TO CLIPBOARD</Button>
 					</div>
 					{confirmed
 						&&
