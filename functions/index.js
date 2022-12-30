@@ -19,7 +19,7 @@ let client = new dhive.Client([
 ]);
 
 let key = dhive.PrivateKey.fromString(config.activeKey);
-let keyLog = dhive.PrivateKey.fromString(config.activeKeyLog);
+// let keyLog = dhive.PrivateKey.fromString(config.activeKeyLog);
 
 const runtimeOpts = {
   timeoutSeconds: 300,
@@ -319,7 +319,7 @@ exports.createAccount = functions
 
     await db.collection("accounts").doc(data.username).set(accountData);
 
-    const accountsCreatedToday = (await db.collection("public").doc('data').get()).data().accountsCreatedToday || 0
+    const accountsCreatedToday = (await db.collection("public").doc('data').get()).data().accountsCreatedToday
     
     await db
         .collection("public")
@@ -627,86 +627,86 @@ exports.claimAccounts = functions.pubsub
     }
   });
 
-exports.postAccountCreationReport = functions.pubsub
-  .schedule("every 24 hours")
-  .timeZone("Asia/Manila")
-  .onRun(async (context) => {
-    let accountsRef = db.collection("accounts");
-    let query = await accountsRef
-      .where("posted", "==", false)
-      .orderBy("timestamp")
-      .get();
+// exports.postAccountCreationReport = functions.pubsub
+//   .schedule("every 24 hours")
+//   .timeZone("Asia/Manila")
+//   .onRun(async (context) => {
+//     let accountsRef = db.collection("accounts");
+//     let query = await accountsRef
+//       .where("posted", "==", false)
+//       .orderBy("timestamp")
+//       .get();
 
-    if (query.empty) {
-      // We haven't created any account, let's quit here
-      return;
-    }
+//     if (query.empty) {
+//       // We haven't created any account, let's quit here
+//       return;
+//     }
 
-    let today = new Date();
-    let title =
-      "Account Creation Report " + today.toISOString().substring(0, 10);
-    let permlink =
-      "account-creation-report-" + today.toISOString().substring(0, 10);
-    let body =
-      "This is an automatic generated account creation report from @" +
-      config.provider +
-      ".\n" +
-      "| Account | Referrer | Creation Time |\n|-|-|-|\n";
-    let tag = "dbuzz";
-    let json_metadata = JSON.stringify({ tags: [tag] });
+//     let today = new Date();
+//     let title =
+//       "Account Creation Report " + today.toISOString().substring(0, 10);
+//     let permlink =
+//       "account-creation-report-" + today.toISOString().substring(0, 10);
+//     let body =
+//       "This is an automatic generated account creation report from @" +
+//       config.provider +
+//       ".\n" +
+//       "| Account | Referrer | Creation Time |\n|-|-|-|\n";
+//     let tag = "dbuzz";
+//     let json_metadata = JSON.stringify({ tags: [tag] });
 
-    query.forEach((doc) => {
-      let account = doc.data();
-      let timestamp = new Date(account.timestamp.seconds * 1000);
-      body =
-        body +
-        "|@ \n" +
-        account.accountName +
-        "|@ \n" +
-        account.referrer +
-        "| \n" +
-        timestamp.toISOString() +
-        "|\n";
+//     query.forEach((doc) => {
+//       let account = doc.data();
+//       let timestamp = new Date(account.timestamp.seconds * 1000);
+//       body =
+//         body +
+//         "|@ \n" +
+//         account.accountName +
+//         "|@ \n" +
+//         account.referrer +
+//         "| \n" +
+//         timestamp.toISOString() +
+//         "|\n";
 
-      db.collection("accounts").doc(account.accountName).set(
-        {
-          posted: true,
-        },
-        { merge: true }
-      );
-    });
+//       db.collection("accounts").doc(account.accountName).set(
+//         {
+//           posted: true,
+//         },
+//         { merge: true }
+//       );
+//     });
 
-    try {
-      await client.broadcast.commentWithOptions(
-        {
-          author: config.accountLog,
-          body: body,
-          json_metadata: json_metadata,
-          parent_author: "",
-          parent_permlink: tag,
-          permlink: permlink,
-          title: title,
-        },
-        {
-          author: config.accountLog,
-          permlink: permlink,
-          allow_votes: true,
-          allow_curation_rewards: true,
-          max_accepted_payout: "1000000.000 HBD",
-          percent_hbd: 10000,
-          extensions: [
-            [
-              0,
-              { beneficiaries: [{ account: config.provider, weight: 10000 }] },
-            ],
-          ],
-        },
-        keyLog
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  });
+//     try {
+//       await client.broadcast.commentWithOptions(
+//         {
+//           author: config.accountLog,
+//           body: body,
+//           json_metadata: json_metadata,
+//           parent_author: "",
+//           parent_permlink: tag,
+//           permlink: permlink,
+//           title: title,
+//         },
+//         {
+//           author: config.accountLog,
+//           permlink: permlink,
+//           allow_votes: true,
+//           allow_curation_rewards: true,
+//           max_accepted_payout: "1000000.000 HBD",
+//           percent_hbd: 10000,
+//           extensions: [
+//             [
+//               0,
+//               { beneficiaries: [{ account: config.provider, weight: 10000 }] },
+//             ],
+//           ],
+//         },
+//         keyLog
+//       );
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   });
 
 exports.addReferrals = functions.firestore
   .document("referrals/{referralId}")
@@ -743,146 +743,146 @@ exports.addReferrals = functions.firestore
     }
   });
 
-exports.updateReferralsCount = functions.firestore
-  .document("referralsCount/{referralId}")
-  .onUpdate(async (change, context) => {
-    let referral = change.after.data();
-    let keyBadgeOne = dhive.PrivateKey.fromString(config.activeKeyBadgeOne);
-    let keyBadgeTwo = dhive.PrivateKey.fromString(config.activeKeyBadgeTwo);
-    let keyBadgeThree = dhive.PrivateKey.fromString(config.activeKeyBadgeThree);
+// exports.updateReferralsCount = functions.firestore
+//   .document("referralsCount/{referralId}")
+//   .onUpdate(async (change, context) => {
+//     let referral = change.after.data();
+//     let keyBadgeOne = dhive.PrivateKey.fromString(config.activeKeyBadgeOne);
+//     let keyBadgeTwo = dhive.PrivateKey.fromString(config.activeKeyBadgeTwo);
+//     let keyBadgeThree = dhive.PrivateKey.fromString(config.activeKeyBadgeThree);
 
-    try {
-      if (referral.hasOwnProperty("referrerCount")) {
-        if (referral.referrerCount >= 10 && referral.referrerCount < 100) {
-          if (!referral.hasOwnProperty("badge")) {
-            // Add BadgeOne
-            let jsonData = [
-              "follow",
-              {
-                follower: config.badgeOne,
-                following: change.after.id,
-                what: ["blog"],
-              },
-            ];
+//     try {
+//       if (referral.hasOwnProperty("referrerCount")) {
+//         if (referral.referrerCount >= 10 && referral.referrerCount < 100) {
+//           if (!referral.hasOwnProperty("badge")) {
+//             // Add BadgeOne
+//             let jsonData = [
+//               "follow",
+//               {
+//                 follower: config.badgeOne,
+//                 following: change.after.id,
+//                 what: ["blog"],
+//               },
+//             ];
 
-            await client.broadcast.json(
-              {
-                required_auths: [],
-                required_posting_auths: [config.badgeOne],
-                id: "follow",
-                json: JSON.stringify(jsonData),
-              },
-              keyBadgeOne
-            );
+//             await client.broadcast.json(
+//               {
+//                 required_auths: [],
+//                 required_posting_auths: [config.badgeOne],
+//                 id: "follow",
+//                 json: JSON.stringify(jsonData),
+//               },
+//               keyBadgeOne
+//             );
 
-            await db
-              .collection("referralsCount")
-              .doc(change.after.id)
-              .set({ badge: config.badgeOne }, { merge: true });
-          }
-        }
+//             await db
+//               .collection("referralsCount")
+//               .doc(change.after.id)
+//               .set({ badge: config.badgeOne }, { merge: true });
+//           }
+//         }
 
-        if (referral.referrerCount >= 100 && referral.referrerCount < 1000) {
-          if (referral.badge === config.badgeOne) {
-            // Remove BadgeOne & Add BadgeTwo
-            let jsonData = [
-              "follow",
-              {
-                follower: config.badgeOne,
-                following: change.after.id,
-                what: [],
-              },
-            ];
+//         if (referral.referrerCount >= 100 && referral.referrerCount < 1000) {
+//           if (referral.badge === config.badgeOne) {
+//             // Remove BadgeOne & Add BadgeTwo
+//             let jsonData = [
+//               "follow",
+//               {
+//                 follower: config.badgeOne,
+//                 following: change.after.id,
+//                 what: [],
+//               },
+//             ];
 
-            await client.broadcast.json(
-              {
-                required_auths: [],
-                required_posting_auths: [config.badgeOne],
-                id: "follow",
-                json: JSON.stringify(jsonData),
-              },
-              keyBadgeOne
-            );
+//             await client.broadcast.json(
+//               {
+//                 required_auths: [],
+//                 required_posting_auths: [config.badgeOne],
+//                 id: "follow",
+//                 json: JSON.stringify(jsonData),
+//               },
+//               keyBadgeOne
+//             );
 
-            jsonData = [
-              "follow",
-              {
-                follower: config.badgeTwo,
-                following: change.after.id,
-                what: ["blog"],
-              },
-            ];
+//             jsonData = [
+//               "follow",
+//               {
+//                 follower: config.badgeTwo,
+//                 following: change.after.id,
+//                 what: ["blog"],
+//               },
+//             ];
 
-            await client.broadcast.json(
-              {
-                required_auths: [],
-                required_posting_auths: [config.badgeTwo],
-                id: "follow",
-                json: JSON.stringify(jsonData),
-              },
-              keyBadgeTwo
-            );
+//             await client.broadcast.json(
+//               {
+//                 required_auths: [],
+//                 required_posting_auths: [config.badgeTwo],
+//                 id: "follow",
+//                 json: JSON.stringify(jsonData),
+//               },
+//               keyBadgeTwo
+//             );
 
-            await db
-              .collection("referralsCount")
-              .doc(change.after.id)
-              .set({ badge: config.badgeTwo }, { merge: true });
-          }
-        }
+//             await db
+//               .collection("referralsCount")
+//               .doc(change.after.id)
+//               .set({ badge: config.badgeTwo }, { merge: true });
+//           }
+//         }
 
-        if (referral.referrerCount >= 1000) {
-          if (referral.badge === config.badgeTwo) {
-            // Remove BadgeTwo & Add BadgeThree
-            let jsonData = [
-              "follow",
-              {
-                follower: config.badgeTwo,
-                following: change.after.id,
-                what: [],
-              },
-            ];
+//         if (referral.referrerCount >= 1000) {
+//           if (referral.badge === config.badgeTwo) {
+//             // Remove BadgeTwo & Add BadgeThree
+//             let jsonData = [
+//               "follow",
+//               {
+//                 follower: config.badgeTwo,
+//                 following: change.after.id,
+//                 what: [],
+//               },
+//             ];
 
-            await client.broadcast.json(
-              {
-                required_auths: [],
-                required_posting_auths: [config.badgeTwo],
-                id: "follow",
-                json: JSON.stringify(jsonData),
-              },
-              keyBadgeTwo
-            );
+//             await client.broadcast.json(
+//               {
+//                 required_auths: [],
+//                 required_posting_auths: [config.badgeTwo],
+//                 id: "follow",
+//                 json: JSON.stringify(jsonData),
+//               },
+//               keyBadgeTwo
+//             );
 
-            jsonData = [
-              "follow",
-              {
-                follower: config.badgeThree,
-                following: change.after.id,
-                what: ["blog"],
-              },
-            ];
+//             jsonData = [
+//               "follow",
+//               {
+//                 follower: config.badgeThree,
+//                 following: change.after.id,
+//                 what: ["blog"],
+//               },
+//             ];
 
-            await client.broadcast.json(
-              {
-                required_auths: [],
-                required_posting_auths: [config.badgeThree],
-                id: "follow",
-                json: JSON.stringify(jsonData),
-              },
-              keyBadgeThree
-            );
+//             await client.broadcast.json(
+//               {
+//                 required_auths: [],
+//                 required_posting_auths: [config.badgeThree],
+//                 id: "follow",
+//                 json: JSON.stringify(jsonData),
+//               },
+//               keyBadgeThree
+//             );
 
-            await db
-              .collection("referralsCount")
-              .doc(change.after.id)
-              .set({ badge: config.badgeThree }, { merge: true });
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  });
+//             await db
+//               .collection("referralsCount")
+//               .doc(change.after.id)
+//               .set({ badge: config.badgeThree }, { merge: true });
+//           }
+//         }
+//       }
+//     } catch (error) {
+//       console.log(error);
+//       return false;
+//     }
+//   });
 
 let app = express();
 app.use(cors());
