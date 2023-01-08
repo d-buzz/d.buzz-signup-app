@@ -56,8 +56,8 @@ exports.createAccount = functions
       }
     } else {
       ticket = "NO TICKET";
-      let oneWeekAgo = admin.firestore.Timestamp.fromDate(
-        new Date(Date.now() - 604800000)
+      let sixtyDaysAgo = admin.firestore.Timestamp.fromDate(
+        new Date(Date.now() - 5184000000)
       );
 
       if (!context.auth.hasOwnProperty("uid")) {
@@ -70,7 +70,7 @@ exports.createAccount = functions
       let accountsRef = db.collection("accounts");
       let query = await accountsRef
         .where("ipAddress", "==", context.rawRequest.ip)
-        .where("timestamp", ">", oneWeekAgo)
+        .where("timestamp", ">", sixtyDaysAgo)
         .get();
 
       if (!query.empty) {
@@ -404,14 +404,14 @@ exports.checkReputation = functions.https.onCall(async (data, context) => {
   let result;
 
   try {
-    let oneWeekAgo = admin.firestore.Timestamp.fromDate(
-      new Date(Date.now() - 604800000)
+    let sixtyDaysAgo = admin.firestore.Timestamp.fromDate(
+      new Date(Date.now() - 5184000000)
     );
 
     let accountsRef = db.collection("accounts");
     let query = await accountsRef
       .where("ipAddress", "==", context.rawRequest.ip)
-      .where("timestamp", ">", oneWeekAgo)
+      .where("timestamp", ">", sixtyDaysAgo)
       .get();
 
     if (!query.empty) {
@@ -578,15 +578,15 @@ exports.claimAccounts = functions.pubsub
           .set({ creators: creators }, { merge: true });
       }
 
-      // Remove HP delegation after 1 week
-      let oneWeekAgo = admin.firestore.Timestamp.fromDate(
-        new Date(Date.now() - 604800000)
+      // Remove HP delegation after 60 days
+      let sixtyDaysAgo = admin.firestore.Timestamp.fromDate(
+        new Date(Date.now() - 5184000000)
       );
 
       let accountsRef = db.collection("accounts");
       let query = await accountsRef
         .where("delegation", "==", true)
-        .where("timestamp", "<", oneWeekAgo)
+        .where("timestamp", "<", sixtyDaysAgo)
         .limit(3)
         .get();
 
@@ -1293,15 +1293,15 @@ app.post("/api/verifyExistingUser", async (req, res) => {
   const ipAddress = req.ip
   const phoneNumber = req.body.phoneNumber
 
-  let oneWeekAgo = admin.firestore.Timestamp.fromDate(
-    new Date(Date.now() - 604800000)
+  let sixtyDaysAgo = admin.firestore.Timestamp.fromDate(
+    new Date(Date.now() - 5184000000)
   );
 
   let accountsRef = db.collection("accounts");
   
   let query = await accountsRef
   .where("ipAddress", "==", ipAddress)
-  .where("timestamp", ">", oneWeekAgo)
+  .where("timestamp", ">", sixtyDaysAgo)
   .get();
 
   phoneNumberHashObject = CryptoJS.SHA256(phoneNumber);
