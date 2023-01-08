@@ -21,6 +21,8 @@ import { useLocation } from 'react-router-dom'
 import PageLoading from '../PageLoading'
 import { isIOS, isSafari } from 'react-device-detect'
 
+import axios from 'axios'
+
 const SignUpWrapper = (props) => {
 
 	const {
@@ -39,6 +41,7 @@ const SignUpWrapper = (props) => {
 		setCurrentPage,
 		appLoading,
 		setAppLoading,
+		setError,
 	} = props
 
 	const analytics = useAnalytics()
@@ -200,10 +203,21 @@ const SignUpWrapper = (props) => {
           }
         }),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
 			setGeneratingAccount(true)
 
-      if (confirmed) {
+			const verifyExistingUser = {
+				url: `${process.env.REACT_APP_API_ENDPOINT}/api/verifyExistingUser`,
+				method: "POST",
+				data: {
+					phoneNumber: phone,
+				},
+				validateStatus: () => true,
+			}
+
+			const verifyExistingUserResponse = (await axios(verifyExistingUser)).data
+
+      if (confirmed && verifyExistingUserResponse.success === true) {
         let password = hive.formatter.createSuggestedPassword()
 
         setAccount({
@@ -241,7 +255,12 @@ const SignUpWrapper = (props) => {
         }
 
         logEvent(analytics, "confirm_account_name")
-      }
+      } else {
+				if(verifyExistingUserResponse.error) {
+					setError(verifyExistingUserResponse.error)
+					setCurrentPage('error-occurred')
+				}
+			}
     },
   })
 
@@ -279,7 +298,7 @@ const SignUpWrapper = (props) => {
 		!appLoading && accountTickets !== null ?
 			<div className='mt-[55px] flex flex-col h-full w-full'>
 				{
-					(accountTickets !== 0 && accountsCreatedToday < 25 && !suspended)
+					(accountTickets !== 0 && accountsCreatedToday < 100 && !suspended)
 					?
 					<div className='flex flex-col w-full'>
 							<div className="h-[200px] w-full flex flex-col items-center justify-center">

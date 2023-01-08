@@ -1289,6 +1289,61 @@ app.get("/api/tickets", async (req, res) => {
   }
 });
 
+app.post("/api/verifyExistingUser", async (req, res) => {
+  const ipAddress = req.ip
+  const phoneNumber = req.body.phoneNumber
+
+  let oneWeekAgo = admin.firestore.Timestamp.fromDate(
+    new Date(Date.now() - 604800000)
+  );
+
+  let accountsRef = db.collection("accounts");
+  
+  let query = await accountsRef
+  .where("ipAddress", "==", ipAddress)
+  .where("timestamp", ">", oneWeekAgo)
+  .get();
+
+  phoneNumberHashObject = CryptoJS.SHA256(phoneNumber);
+
+  let queryUser = await accountsRef
+    .where(
+      "phoneNumberHash",
+      "==",
+      phoneNumberHashObject.toString(CryptoJS.enc.Hex)
+    )
+    .get();
+
+  if (!query.empty) {
+    console.log("IP was recently used for account creation.");
+
+    res.status(400).send(
+      {
+        error: "Your IP was recently used for account creation.",
+      }
+    );
+  }
+
+
+  if (!queryUser.empty) {
+    console.log(
+      "Phone number (" +
+        phoneNumberHashObject.toString(CryptoJS.enc.Hex) +
+        ") was already used for account creation."
+    );
+    res.status(400).send(
+      {
+        error: "Your phone number was already used for account creation.",
+      }
+    );
+  }
+
+  res.status(200).send({
+    success: true,
+  })
+
+})
+
 app.post("/api/tickets", async (req, res) => {
   function create_UUID() {
     var dt = new Date().getTime();

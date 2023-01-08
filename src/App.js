@@ -18,6 +18,7 @@ import {
 } from "reactfire"
 import BackupAccountWrapper from './components/BackupAccountWrapper'
 import AccountCreatedWrapper from './components/AccountCreatedWrapper'
+import ErrorOccurredWrapper from './components/ErrorOccurredWrapper'
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
   const [suspended, setSuspended] = useState(false)
   const [phone, setPhone] = useState('')
   const [debugMode, setDebugMode] = useState(false)
+  const [error, setError] = useState('')
 
   const [appLoading, setAppLoading] = useState(true)
 
@@ -77,6 +79,7 @@ function App() {
             setAccount={setAccount}
             phone={phone}
             setPhone={setPhone}
+            setError={setError}
           />
         )
       case 'backup-account':
@@ -90,12 +93,19 @@ function App() {
             phone={phone}
             setPhone={setPhone}
             debugMode={debugMode}
+            setError={setError}
           />
         )
       case 'account-created':
         return (
           <AccountCreatedWrapper
             account={account}
+          />
+        )
+      case 'error-occurred':
+        return (
+          <ErrorOccurredWrapper
+            error={error}
           />
         )
       default:

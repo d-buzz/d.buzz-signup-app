@@ -20,7 +20,6 @@ const OTPVerificationWrapper = (props) => {
 		setConfirmationCode,
 		accountCreated,
 		handleVerifyOpt,
-		error,
 		// eslint-disable-next-line
 		confirmationResult,
 		// eslint-disable-next-line
@@ -69,19 +68,6 @@ const OTPVerificationWrapper = (props) => {
 		handleRequestCode()
 	}
 
-	const getErrorMessage = (err) => {
-		switch(err) {
-			case 'Firebase: Error (auth/invalid-verification-code).':
-				return 'The entered code is invalid.'
-			case 'Firebase: Error (auth/code-expired).':
-				return 'The code is expired, please try again.'
-			case 'Firebase: Error (auth/too-many-requests).':
-				return 'Too many requests, please try again later.'
-			default:
-				return 'Unexpected error: ' + err
-		}
-	}
-
 	return (
 		<div className="mt-[100px] h-full flex flex-col justify-center items-center">
 			<div className="flex flex-col items-start">
@@ -102,7 +88,7 @@ const OTPVerificationWrapper = (props) => {
 						!codeRequested && !accountCreated
 						?
 							<div className='relative mt-4 flex flex-col items-center justify-center'>
-								<Button variant='fill' onClick={handleRequestOTPCode} disabled={requestedCodeLimit || error === 'Firebase: Error (auth/too-many-requests).'} loading={submitting}>SEND CODE</Button>
+								<Button variant='fill' onClick={handleRequestOTPCode} disabled={requestedCodeLimit} loading={submitting}>SEND CODE</Button>
 								{
 									requestedCodeCount > 0 && requestedCodeAgainIn > 0 &&
 									<span className='mt-4 md:mt-0 lg:mt-0 md:absolute lg:md:absolute right-[-120px] text-[12px] text-gray-400'>Request another <br /> code in {requestedCodeAgainIn}</span>
@@ -113,15 +99,11 @@ const OTPVerificationWrapper = (props) => {
 								}
 							</div>
 						:
-							<Button className='mt-4' variant='fill' onClick={handleRequestOTPCode} disabled={submitting} loading={submitting}>VERIFY CODE</Button>
+							<Button className='mt-4' variant='fill' onClick={handleVerifyOpt} disabled={submitting} loading={submitting}>VERIFY CODE</Button>
 					}
 					{
 						accountCreated &&
 						<PageLoading />
-					}
-					{
-						error &&
-							<span className='w-[80%] md:w-[fit] lg:w-[fit] mt-4 text-[#e61c34] font-semibold'>{getErrorMessage(error)}</span>
 					}
 				</div>
 			</div>

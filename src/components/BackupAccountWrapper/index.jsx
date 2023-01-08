@@ -19,6 +19,7 @@ const BackupAccountWrapper = (props) => {
 		creator,
 		ticket,
 		debugMode,
+		setError,
 	} = props
 
 	const auth = useAuth()
@@ -26,7 +27,6 @@ const BackupAccountWrapper = (props) => {
   const analytics = useAnalytics()
   const [confirmed, setConfirmed] = useState(false)
   const [backupConfirmed, setBackupConfirmed] = useState(false)
-  const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [showPhoneVerifier, setShowPhoneVerifier] = useState(false)
 	// eslint-disable-next-line
@@ -116,10 +116,13 @@ const BackupAccountWrapper = (props) => {
 							memo: account.privateKeys.memo,
 						},
 						function () {
+							setAccountCreated(true)
 							setCurrentPage('account-created')
 						}
 					)
 				} else {
+
+					setAccountCreated(true)
 					setCurrentPage('account-created')
 				}
 			} else if (ticket && ticket !== "invalid") {
@@ -131,6 +134,7 @@ const BackupAccountWrapper = (props) => {
 					creator: creator,
 					ticket: ticket,
 				}).then(function (result) {
+					console.log(result);
 					if (result.data.hasOwnProperty("error")) {
 						logEvent(analytics, "create_account_error", {
 							error: result.data.error,
@@ -153,13 +157,18 @@ const BackupAccountWrapper = (props) => {
 									memo: account.privateKeys.memo,
 								},
 								function () {
+									setAccountCreated(true)
 									setCurrentPage('account-created')
 								}
 							)
 						} else {
+							setAccountCreated(true)
 							setCurrentPage('account-created')
 						}
 					}
+				})
+				.catch((err) => {
+					console.log(err.message)
 				})
 			} else {
 				setShowPhoneVerifier(true)
@@ -214,6 +223,8 @@ const BackupAccountWrapper = (props) => {
 							error: result.data.error,
 						})
 						setError(result.data.error)
+						setCurrentPage('error-occurred')
+						reset()
 					} else {
 						logEvent(analytics, "create_account_success")
 						if (
@@ -229,20 +240,27 @@ const BackupAccountWrapper = (props) => {
 									memo: account.privateKeys.memo,
 								},
 								 () => {
+									setAccountCreated(true)
 									setCurrentPage('account-created')
+									reset()
 								}
 							);
 						} else {
+							setAccountCreated(true)
 							setCurrentPage('account-created')
+							reset()
 						}
 					}
 				})
-				setCurrentPage('account-created')
-				setAccountCreated(true)
-				reset()
+				.catch((err) => {
+					setError(err.message)
+					setCurrentPage('error-occurred')
+					reset()
+				})
 			})
 			.catch(function (error) {
 				setError(error.message)
+				setCurrentPage('error-occurred')
 				reset()
 			})
 	}
@@ -343,7 +361,6 @@ const BackupAccountWrapper = (props) => {
 					setConfirmationResult={setConfirmationResult}
 					accountCreated={accountCreated}
 					handleVerifyOpt={handleVerifyOpt}
-					error={error}
 				/>
 			}
 			<Button
