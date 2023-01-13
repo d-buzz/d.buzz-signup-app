@@ -339,8 +339,30 @@ exports.createAccount = functions
         .set({ consumed: true, consumedBy: data.username }, { merge: true });
     }
 
+    // calculate 15 HP to RCs
+    const getRcAccountRequest = {
+      url: "https://api.deathwing.me/",
+      method: "POST",
+      data: {
+        "jsonrpc": "2.0",
+        "method": "rc_api.find_rc_accounts",
+        "params": {"accounts": ["dbuzz"]},
+        "id": 1
+      }
+    }
+
+    const rcAccountData = (await axios(getRcAccountRequest)).data.result.rc_accounts[0]
+  
+    const props = await client.database.getDynamicGlobalProperties()
+    const amount_rc = parseInt(rcAccountData.rc_manabar.current_mana)
+    const hive_per_vests = props.total_vesting_fund_hive / props.total_vesting_shares
+    const hp = amount_rc * hive_per_vests / 1000000
+    const oneHPToRC = amount_rc / hp
+    
+    const rcDelegationAmount = (oneHPToRC * config.rcThreshold)
+    
     // RC delegation
-    if (config.rcDelegation === 0) {
+    if (config.rcThreshold === 0) {
       await db
         .collection("accounts")
         .doc(data.username)
@@ -357,7 +379,7 @@ exports.createAccount = functions
               {
                 from: config.account,
                 delegatees: [data.username],
-                max_rc: config.rcDelegation,
+                max_rc: rcDelegationAmount,
               },
             ]),
           },
@@ -495,13 +517,33 @@ exports.claimAccounts = functions.pubsub
   .timeZone("Asia/Manila")
   .onRun(async (context) => {
     try {
-      let ac = await client.call("rc_api", "find_rc_accounts", {
-        accounts: [config.account],
-      });
 
-      let rc = Number(ac.rc_accounts[0].rc_manabar.current_mana);
+      const getRcAccountRequest = {
+        url: 'https://api.deathwing.me/',
+        method: 'POST',
+        data: {
+          "jsonrpc": "2.0",
+          "method": "rc_api.find_rc_accounts",
+          "params": {"accounts": ["dbuzz"]},
+          "id": 1
+        }
+      }
 
-      if (rc > config.rcThreshold * 1000000000000) {
+      const rcAccountData = (await axios(getRcAccountRequest)).data.result.rc_accounts[0]
+
+      const username = rcAccountData.account
+      const currentMana = rcAccountData.rc_manabar.current_mana
+      const maxMana = rcAccountData.max_rc
+    
+      const account = {
+        username: username,
+        max_mana: currentMana,
+        current_mana: maxMana,
+        current_pct: (currentMana * 100 / maxMana).toFixed(2),
+      }
+
+      if (account.current_pct >= config.rcThreshold) {
+        console.log("Claiming accounts for @dbuzz")
         let op = [
           "claim_account",
           {
