@@ -4,12 +4,11 @@
   "activeKey": "",
   "accountLog": "",
   "activeKeyLog": "",
-  "rcThreshold": 30,
+  "rcThreshold": "",
   "creator_instances": [],
   "fee": {
     "referrer": 300,
     "creator": 100,
     "provider": 100
-  },
-	"rcDelegation": 26988274803
+  }
 }
