@@ -14,7 +14,7 @@ const Header = () => {
 				<span className='absolute h-fit top-0 bottom-0 m-auto right-[-50px] p-[2px] pl-[8px] pr-[8px] bg-[#e61c3443] font-bold text-[#e61c34] text-[10px] rounded-md select-none'>BETA</span>
 			</div>
 			<Button variant='outlined' className='ml-auto' onClick={handleRedirectLogin}>
-				Log in
+				Login instead
 			</Button>
 		</div>
 	)
