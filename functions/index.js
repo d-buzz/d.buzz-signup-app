@@ -513,7 +513,7 @@ exports.updateDailyLimit = functions.pubsub
   });
 
 exports.claimAccounts = functions.pubsub
-  .schedule("every 10 minutes")
+  .schedule("every 24 hours")
   .timeZone("Asia/Manila")
   .onRun(async (context) => {
     try {
@@ -537,12 +537,14 @@ exports.claimAccounts = functions.pubsub
     
       const account = {
         username: username,
-        max_mana: currentMana,
-        current_mana: maxMana,
+        max_mana: maxMana,
+        current_mana: currentMana,
         current_pct: (currentMana * 100 / maxMana).toFixed(2),
       }
 
-      if (account.current_pct >= config.rcThreshold) {
+      const minRCRequiremnet = 12000000000000 // 12 T RC mimimum required for account claiming
+
+      if (account.current_pct >= config.rcThreshold && account.current_mana > minRCRequiremnet) {
         console.log("Claiming accounts for @dbuzz")
         let op = [
           "claim_account",
@@ -554,6 +556,8 @@ exports.claimAccounts = functions.pubsub
         ];
 
         await client.broadcast.sendOperations([op], key);
+      } else {
+        console.log("Not enough RCs to claim an account")
       }
 
       // Update account
