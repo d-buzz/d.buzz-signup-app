@@ -350,12 +350,22 @@ exports.createAccount = functions
         "id": 1
       }
     }
+    const getDynamicGlobalPropertiesRequest = {
+      url: "https://api.deathwing.me/",
+      method: "POST",
+      data: {
+        "jsonrpc":"2.0",
+         "method":"condenser_api.get_dynamic_global_properties",
+         "params":[],
+         "id":1
+      }
+    }
 
     const rcAccountData = (await axios(getRcAccountRequest)).data.result.rc_accounts[0]
+    const dynamicGlobalProperties = (await axios(getDynamicGlobalPropertiesRequest)).data.result
   
-    const props = await client.database.getDynamicGlobalProperties()
     const amount_rc = parseInt(rcAccountData.rc_manabar.current_mana)
-    const hive_per_vests = props.total_vesting_fund_hive / props.total_vesting_shares
+    const hive_per_vests = dynamicGlobalProperties.total_vesting_fund_hive.split(" ")[0] / dynamicGlobalProperties.total_vesting_shares.split(" ")[0]
     const hp = amount_rc * hive_per_vests / 1000000
     const oneHPToRC = amount_rc / hp
     
