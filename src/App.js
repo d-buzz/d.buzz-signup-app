@@ -42,8 +42,7 @@ function App() {
 
   useEffect(() => {
     const query = new URLSearchParams(location.search)
-    // const referrer = location.pathname.split('@')[1] || 'dbuzz'
-    const referrer = 'dbuzz'
+    const referrer = location.pathname.split('@')[1] || 'dbuzz'
 
     hive.api.getAccounts([referrer], function (err, result) {
       if (result) {
@@ -60,16 +59,13 @@ function App() {
     // eslint-disable-next-line
   }, [location.pathname])
 
-
   const getActivePage = () => {
     switch(currentPage) {
       case 'create-account':
         return (
           <SignUpWrapper
-            referrerAccount={referrerAccount}
-            setReferrerAccount={setReferrerAccount}
             referrer={referrer}
-            setReferrer={setReferrer}
+            referrerAccount={referrerAccount}
             suspended={suspended}
             setSuspended={setSuspended}
             setCurrentPage={setCurrentPage}

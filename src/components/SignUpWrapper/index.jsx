@@ -22,6 +22,7 @@ import PageLoading from '../PageLoading'
 import { isIOS, isSafari } from 'react-device-detect'
 
 import axios from 'axios'
+import ReferrerWrapper from '../ReferrerWrapper'
 
 const SignUpWrapper = (props) => {
 
@@ -310,6 +311,13 @@ const SignUpWrapper = (props) => {
 								<span className='ml-[15px] mr-[15px] w-[80px] border-t-[4px] border-dotted border-[#e61c34]'/>
 								<img src={HiveIcon} alt="hive icon" className='h-[45px]' />
 							</div>
+
+							{referrerProfile.account && referrerProfile.account !== 'dbuzz' &&
+								<div className='flex flex-col items-center referrer-wrapper'>
+									<span className='mt-8 font-bold'>Referred by:</span>
+									<ReferrerWrapper referrer={referrerProfile}/>
+								</div>
+							}
 
 							<div className='h-[200px] mt-[50px] flex flex-col items-center'>
 								<Form className='h-full flex flex-col justify-center items-center' onSubmit={formik.handleSubmit}>
