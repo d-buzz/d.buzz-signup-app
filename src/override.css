@@ -132,3 +132,17 @@ code {
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+.referrer-wrapper {
+  animation: scale 350ms;
+}
+
+
+@keyframes scale {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
