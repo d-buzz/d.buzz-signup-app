@@ -25,6 +25,7 @@ const BackupAccountWrapper = (props) => {
 	const auth = useAuth()
   const functions = useFunctions()
   const analytics = useAnalytics()
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const [backupConfirmed, setBackupConfirmed] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -86,7 +87,7 @@ const BackupAccountWrapper = (props) => {
 
 	const downloadBackupFile = () => {
     var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
-    saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt")
+    saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt",)
 		setConfirmed(true)
   }
 	
@@ -97,7 +98,7 @@ const BackupAccountWrapper = (props) => {
     textField.select()
     document.execCommand("copy")
     textField.remove()
-		setConfirmed(true)
+		setCopiedToClipboard(true)
   }
 
 	const handleCreateAccount = () => {
@@ -309,10 +310,14 @@ const BackupAccountWrapper = (props) => {
 						</div>
 					</div>
 					<div className="mt-6 flex flex-col md:flex-row lg:flex-row justify-center items-center">
+						<Button variant='fill' onClick={() => copyToClipboard(accountString)} disabled={copiedToClipboard || confirmed}>COPY TO CLIPBOARD</Button>
+						<span className="pt-2 pb-2 pl-2 pr-2" />
 						<Button variant='fill' onClick={downloadBackupFile} disabled={confirmed}>DOWNLOAD BACKUP</Button>
-						<span className="pt-2 pb-2 pl-2 pr-2">OR</span>
-						<Button variant='fill' onClick={() => copyToClipboard(accountString)} disabled={confirmed}>COPY TO CLIPBOARD</Button>
 					</div>
+					{copiedToClipboard && !confirmed
+						&&
+						<span className="rounded-full mt-8 p-2 pl-4 pr-4 text-[16px] text-[#e61c34] bg-[#ffd4d9] font-medium">Keys copied to clipboard, please download the backup as well. 🔐</span>
+					}
 					{confirmed
 						&&
 						<span className="rounded-full mt-8 p-2 pl-4 pr-4 text-[16px] text-[#e61c34] bg-[#ffd4d9] font-medium">Keys backed up successfully 🔐</span>
@@ -340,7 +345,7 @@ const BackupAccountWrapper = (props) => {
 					<label className="flex items-start justify-start gap-2 mt-6 w-[85%] md:w-[570px] lg:w-[760px] checkbox-container" style={{ cursor: !confirmed ? 'not-allowed' : 'pointer' }}>
 						<input type="checkbox" id="keys" checked={backupConfirmed} onChange={() => setBackupConfirmed(true)} disabled={!confirmed}/>
 						<span className="checkmark" style={{ opacity: !confirmed ? '50%' : '100%', cursor: !confirmed ? 'not-allowed' : 'pointer' }}/>
-						<div htmlFor="keys" className="ml-4 text-[16px] md:text-[22px] lg:text-[22px]" style={{ cursor: !confirmed ? 'not-allowed' : 'pointer' }}>I (the soon to be owner of @{account.username}) declare that I understand the requirement of safely securing these private keys. I understand that neither HiveOnboard nor any other entity on this planet is capable of restoring or changing these keys if lost. Meaning I really did save these keys in a safe location that I will be able to find later.</div>
+						<div htmlFor="keys" className="ml-4 text-[16px] md:text-[22px] lg:text-[22px]" style={{ cursor: !confirmed ? 'not-allowed' : 'pointer' }}>I (the soon to be owner of @{account.username}) declare that I understand the requirement of safely securing these private keys. I understand that neither DBUZZ nor any other entity on this planet is capable of restoring or changing these keys if lost. Meaning I really did save these keys in a safe location that I will be able to find later.</div>
 					</label>
 				</div>
 				:

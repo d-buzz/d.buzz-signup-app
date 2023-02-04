@@ -8,7 +8,7 @@ const AccountCreatedWrapper = (props) => {
 	const { account } = props
 	
 	const handleRedirectLogin = () => {
-		window.location = `https://d.buzz?loginuser=${account.username}`
+		window.location = `https://d.buzz`
 	}
 
 	useEffect(() => {
