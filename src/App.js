@@ -42,7 +42,7 @@ function App() {
 
   useEffect(() => {
     const query = new URLSearchParams(location.search)
-    const referrer = location.pathname.split('@')[1] || 'dbuzz'
+    const referrer = location.pathname.split('@')[1]?.replace(/[./?]/, '') || 'dbuzz'
 
     hive.api.getAccounts([referrer], function (err, result) {
       if (result) {
