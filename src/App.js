@@ -34,7 +34,7 @@ function App() {
   const [referrer, setReferrer] = useState(null)
   const [currentPage, setCurrentPage] = useState('create-account')
   const [suspended, setSuspended] = useState(false)
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState('+1')
   const [debugMode, setDebugMode] = useState(false)
   const [error, setError] = useState('')
 

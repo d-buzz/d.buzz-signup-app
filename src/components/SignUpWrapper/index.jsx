@@ -60,6 +60,10 @@ const SignUpWrapper = (props) => {
 	const [generatingAccount, setGeneratingAccount] = useState(false)
 	// eslint-disable-next-line
   const [showUnsupportedBrowserAlert, setShowUnsupportedBrowserAlert] = useState(false)
+	const [typingUsername, setTypingUsername] = useState(false)
+	const [checkingUsernameAvailability, setCheckingUsernameAvailability] = useState(false)
+	const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
+	const [isUsernameValid, setIsUsernameValid] = useState(false)
 
 	const [helperTextColor, setHelperTextColor] = useState('#969494')
 
@@ -165,44 +169,7 @@ const SignUpWrapper = (props) => {
     validationSchema: Yup.object({
       username: Yup.string()
         .min(3, "Username should contain at least 3 characters")
-        .required("Username is required")
-        .test("isValid", "Username is invalid", (value) => {
-					if (value) {
-						if (value.length >= 3) {
-							if (_.isEmpty(hive.utils.validateAccountName(value))) {
-								// handle valid here
-								// console.log("Username is valid")
-								return true
-              } else {
-								// handle invalid here
-								// console.log("Username is invalid")
-                return false
-              }
-            }
-          } else {
-            return true
-          }
-        })
-        .test("isAvailable", "Username is not available", async (value) => {
-          if (value) {
-            if (value.length >= 3) {
-              let result = await hive.api.lookupAccountNamesAsync([value])
-              if (_.isEmpty(result[0])) {
-								// handle username available here
-								// console.log("Username is available")
-                return true
-              } else {
-								// handle username not available here
-								// console.log("Username is not available")
-                return false
-              }
-            } else {
-              return true
-            }
-          } else {
-            return true
-          }
-        }),
+        .required("Username is required"),
     }),
     onSubmit: async (values) => {
 			setGeneratingAccount(true)
@@ -266,34 +233,76 @@ const SignUpWrapper = (props) => {
   })
 
 	useEffect(() => {
+		if(formik.values.username) {
+			setTypingUsername(true)
+		}
+
+		const resolve = async () => {
+			let result = await hive.api.lookupAccountNamesAsync([formik.values.username])
+			
+			if (_.isEmpty(hive.utils.validateAccountName(formik.values.username))) {
+				setIsUsernameValid(true)
+
+				if (_.isEmpty(result[0])) {
+					// console.log('Username is available!');
+					setIsUsernameAvailable(true)
+					setCheckingUsernameAvailability(false)
+				} else {
+					// console.log('Username not available!');
+					setIsUsernameAvailable(false)
+					setCheckingUsernameAvailability(false)
+				}
+			} else {
+				setIsUsernameValid(false)
+				// console.log('Username is not valid');
+				setCheckingUsernameAvailability(false)
+			}
+		}
+
+		const delayDebounce = setTimeout(() => {
+			if(formik.values.username !== '') {
+				setTypingUsername(false)
+				setCheckingUsernameAvailability(true)
+				resolve()
+			}
+		}, 1000)
+
+    return () => clearTimeout(delayDebounce)
+		// eslint-disable-next-line
+	}, [formik.values.username])
+
+
+	useEffect(() => {
 		const error = formik.errors.username
-		if(error) {
-			switch(error) {
-				case 'Username is required':
+		if(!typingUsername && !checkingUsernameAvailability) {
+			if(error) {
+				switch(error) {
+					case 'Username is required':
+						setHelperTextColor('#dc3545')
+						break
+					case 'Username should contain at least 3 characters':
+						setHelperTextColor('#dc3545')
+						break
+					default:
+						setHelperTextColor('#BABABA')
+						break
+				}
+			} else {
+				if(isUsernameValid && isUsernameAvailable) {
+					setHelperTextColor('#28a745')
+				} else {
 					setHelperTextColor('#dc3545')
-					break
-				case 'Username should contain at least 3 characters':
-					setHelperTextColor('#dc3545')
-					break
-				case 'Username is invalid':
-					setHelperTextColor('#dc3545')
-					break
-				case 'Username is not available':
-					setHelperTextColor('#dc3545')
-					break
-				default:
-					setHelperTextColor('#BABABA')
-					break
+				}
 			}
 		} else {
-			setHelperTextColor('#28a745')
+			setHelperTextColor('#ff8000')
 		}
 
 		if(!isValidPhone() && !formik.errors.username && formik.values.username !== '') {
 			setConfirmed(true)
 		}
 		// eslint-disable-next-line
-	}, [formik.errors.username, formik.values.username])
+	}, [formik.errors.username, typingUsername, checkingUsernameAvailability, isUsernameValid, isUsernameAvailable])
 
 	return (
 		!appLoading && accountTickets !== null ?
@@ -327,7 +336,17 @@ const SignUpWrapper = (props) => {
 										label="Username"
 										placeholder='Pick a username'
 										startIcon='@'
-										endIcon={ formik.errors.username ? '❌' : formik.values.username !== '' ? '✅' : ''}
+										endIcon={ 
+											formik.values.username &&
+											(
+												!typingUsername ?
+												!checkingUsernameAvailability ?
+												formik.errors.username ? '❌' :
+												isUsernameValid ? isUsernameAvailable ? '✅' : '❌' : '❌' :
+												'🔎' :
+												'⌛️'
+											)
+										}
 										size={18}
 										className='w-[350px] md:w-[400px] lg:w-[400px]'
 										theme={formik.values.username ? helperTextColor : ''}
@@ -339,7 +358,16 @@ const SignUpWrapper = (props) => {
 										disabled={generatingAccount}
 									/>
 									<span className={`flex justify-end pr-4 mt-[5px] mb-4 text-[14px] font-medium`} style={{ color: helperTextColor }}>
-										{formik.errors.username ? formik.errors.username : formik.values.username !== '' && 'Username is available'}
+										{
+											formik.values.username &&
+											(
+												!typingUsername &&
+												!checkingUsernameAvailability ?
+												formik.errors.username ? formik.errors.username :
+												isUsernameValid ? isUsernameAvailable ? 'Username is available' : 'Username is not available' : 'Username is not valid' :
+												'Checking for username availability'
+											)
+										}
 									</span>
 									<InputField
 										placeholder='Enter your phone number'
@@ -350,7 +378,7 @@ const SignUpWrapper = (props) => {
 										onChange={setPhone}
 										disabled={generatingAccount}
 									/>
-									<Button type='submit' className='w-[350px] md:w-[400px] lg:w-[400px]' onClick={() => setGeneratingAccount(true)} variant='fill' loading={generatingAccount} disabled={!isValidPhone() || formik.errors.username}>Continue</Button>
+									<Button type='submit' className='w-[350px] md:w-[400px] lg:w-[400px]' onClick={() => setGeneratingAccount(true)} variant='fill' loading={generatingAccount} disabled={!isValidPhone() || typingUsername || checkingUsernameAvailability || !isUsernameAvailable || !isUsernameValid}>Continue</Button>
 								</Form>
 							</div>
 					</div>
