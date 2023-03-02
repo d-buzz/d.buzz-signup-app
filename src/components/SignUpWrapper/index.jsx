@@ -152,7 +152,12 @@ const SignUpWrapper = (props) => {
 				tickets = 0
 			}
 
-			setAccountTickets(tickets)
+			if(ticket !== 0) {
+				setAccountTickets(tickets)
+			} else {
+				setAccountTickets(null)
+			}
+
 			setAppLoading(false)
 		}
 		// eslint-disable-next-line
