@@ -19,6 +19,7 @@ import {
 import BackupAccountWrapper from './components/BackupAccountWrapper'
 import AccountCreatedWrapper from './components/AccountCreatedWrapper'
 import ErrorOccurredWrapper from './components/ErrorOccurredWrapper'
+import Footer from './components/Footer'
 
 function App() {
 
@@ -42,7 +43,7 @@ function App() {
 
   useEffect(() => {
     const query = new URLSearchParams(location.search)
-    const referrer = location.pathname.split('@')[1]?.replace(/[./?]/, '') || 'dbuzz'
+    const referrer = location.pathname.split('@')[1]?.match(/[A-Za-z0-9-.]+/)?.[0] || 'dbuzz'
 
     hive.api.getAccounts([referrer], function (err, result) {
       if (result) {
@@ -117,6 +118,7 @@ function App() {
             <AnalyticsProvider sdk={analyticsProvider}>
               <Header />
               {getActivePage()}
+              <Footer />
             </AnalyticsProvider>
           </FunctionsProvider>
         </AuthProvider>
