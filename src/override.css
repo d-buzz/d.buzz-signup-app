@@ -13,6 +13,10 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+.app {
+  height: calc(100vh - 110px);
+}
+
 .PhoneInputInput {
   outline: none;
   outline-width: 0;
