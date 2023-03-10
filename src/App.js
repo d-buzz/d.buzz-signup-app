@@ -111,7 +111,7 @@ function App() {
   }
 
   return (
-    <div className="app max-h-screen w-full bg-white">
+    <div className="app min-h-[500px] max-h-screen w-full bg-white">
       <FirestoreProvider sdk={firestoreProvider}>
         <AuthProvider sdk={authProvider}>
           <FunctionsProvider sdk={functionsProvider}>
