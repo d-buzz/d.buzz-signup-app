@@ -4,7 +4,6 @@
     "indexes": "firebase/firestore.indexes.json"
   },
   "hosting": {
-    "site": "staging-join-dbuzz",
     "public": "build",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
