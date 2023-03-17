@@ -111,14 +111,14 @@ function App() {
   }
 
   return (
-    <div className="app min-h-[500px] max-h-screen w-full bg-white">
+    <div className="app h-full w-full bg-white">
       <FirestoreProvider sdk={firestoreProvider}>
         <AuthProvider sdk={authProvider}>
           <FunctionsProvider sdk={functionsProvider}>
             <AnalyticsProvider sdk={analyticsProvider}>
-              <Header />
+              <Header appLoading={appLoading}/>
               {getActivePage()}
-              <Footer />
+              <Footer appLoading={appLoading}/>
             </AnalyticsProvider>
           </FunctionsProvider>
         </AuthProvider>

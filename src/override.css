@@ -141,6 +141,17 @@ code {
   animation: scale 350ms;
 }
 
+.grecaptcha-badge {
+  z-index: 999;
+  margin-bottom: 100px;
+}
+
+@media (max-height: 1300px) {
+  .backup-account-page {
+    margin-top: 100px;
+  }
+}
+
 
 @keyframes scale {
   0% {

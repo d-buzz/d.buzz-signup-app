@@ -30,20 +30,20 @@ const ErrorOccurredWrapper = (props) => {
 	}
 
 	return (
-		<div className="mt-[100px] flex flex-col h-[600px] w-full justify-center items-center">
+		<div className="pt-[100px] flex flex-col min-h-[600px] h-full w-full justify-center items-center">
 			{error && getErrorMessage(error) !== 'Your IP was recently used for account creation.'
 				?
-				<div className="flex flex-col items-start">
-					<span className='w-[80%] w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-semibold text-left text-[18px] md:text-[22px] lg:text-[24px]'>{getErrorMessage(error)}</span>
+				<div className="flex flex-col items-start w-[80%]">
+					<span className='w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-semibold text-left text-[18px] md:text-[22px] lg:text-[24px]'>{getErrorMessage(error)}</span>
 					<span className="mt-2 text-[18px] md:text-[20px] lg:text-[20px]">You can use <a href='https://signup.hive.io' className='text-[#e31337] font-medium'>signup.hive.io</a></span>
 					<Button className='w-fit mt-6' variant='fill' onClick={handleRetry}>OR TRY ANOTHER?</Button>
 				</div>
 				:
 				error &&
-				<div className="">
-					<div className='w-[80%] w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-semibold text-center text-[18px] md:text-[22px] lg:text-[24px]'>{getErrorMessage(error)}</div>
+				<div className="flex justify-center">
+					<div className='w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-semibold text-center text-[18px] md:text-[22px] lg:text-[24px]'>{getErrorMessage(error)}</div>
 					<div className="mt-8"/>
-					<div className='w-[80%] w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-medium text-center text-[14px] md:text-[18px] lg:text-[20px]'>Try other sign up options:</div>
+					<div className='w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-medium text-center text-[14px] md:text-[18px] lg:text-[20px]'>Try other sign up options:</div>
 					<div className="mt-[25px] ml-auto mr-auto w-[80%] md:w-[600px] lg:w-[800px] flex justify-between items-center">
 						<div className="overflow-hidden rounded-lg flex flex-col items-center font-bold text-center bg-gray-100 border-[#e61c34] border-[2px]">
 							<img className="m-4 w-[150px] h-[65.38px] bg-gray-700 rounded cursor-pointer" src={HiveOnBoardLogo} alt="hiveonboard" />
