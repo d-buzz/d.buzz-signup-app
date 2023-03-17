@@ -26,6 +26,7 @@ const BackupAccountWrapper = (props) => {
   const functions = useFunctions()
   const analytics = useAnalytics()
   const [copiedToClipboard, setCopiedToClipboard] = useState(false)
+  const [keysDownloaded, setKeysDownloaded] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const [backupConfirmed, setBackupConfirmed] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -85,10 +86,16 @@ const BackupAccountWrapper = (props) => {
 		`"PeakLock" login method (an alternative for mobile).\n\n` +
 		`Be very careful directly using your keys on any other website or application.`
 
+	useEffect(() => {
+		if(copiedToClipboard && keysDownloaded) {
+			setConfirmed(true)
+		}
+	}, [copiedToClipboard, keysDownloaded])
+
 	const downloadBackupFile = () => {
     var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
     saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt",)
-		setConfirmed(true)
+		setKeysDownloaded(true)
   }
 	
 	const copyToClipboard = (text) => {
@@ -267,7 +274,7 @@ const BackupAccountWrapper = (props) => {
 	}
 
 	return (
-		<div className="pb-12 mt-[100px] h-full flex flex-col justify-center items-center"> 
+		<div className="pb-12 min-h-full flex flex-col justify-center items-center backup-account-page"> 
 			{!showPhoneVerifier
 				?
 				<div className="flex flex-col justify-center items-center">
@@ -310,17 +317,24 @@ const BackupAccountWrapper = (props) => {
 						</div>
 					</div>
 					<div className="mt-6 flex flex-col md:flex-row lg:flex-row justify-center items-center">
-						<Button variant='fill' onClick={() => copyToClipboard(accountString)} disabled={copiedToClipboard || confirmed}>COPY TO CLIPBOARD</Button>
+						<Button variant='fill' onClick={() => copyToClipboard(accountString)} disabled={confirmed || copiedToClipboard}>COPY TO CLIPBOARD</Button>
 						<span className="pt-2 pb-2 pl-2 pr-2" />
-						<Button variant='fill' onClick={downloadBackupFile} disabled={confirmed}>DOWNLOAD BACKUP</Button>
+						<Button variant='fill' onClick={downloadBackupFile} disabled={confirmed || keysDownloaded}>DOWNLOAD BACKUP</Button>
 					</div>
-					{copiedToClipboard && !confirmed
+					{confirmed
+						&&
+						<>
+							<span className="rounded-full mt-8 p-2 pl-4 pr-4 text-[16px] text-[#e61c34] bg-[#ffd4d9] font-medium">Keys downloaded and copied to clipboard. 🔐</span>
+							<span className="rounded-full mt-8 p-2 pl-4 pr-4 text-[16px] text-[#e61c34] bg-[#ffd4d9] font-medium">Please consider taking a screenshot of the keys as well. 🔐</span>
+						</>
+					}
+					{copiedToClipboard && !keysDownloaded
 						&&
 						<span className="rounded-full mt-8 p-2 pl-4 pr-4 text-[16px] text-[#e61c34] bg-[#ffd4d9] font-medium">Keys copied to clipboard, please download the backup as well. 🔐</span>
 					}
-					{confirmed
+					{keysDownloaded && !copiedToClipboard
 						&&
-						<span className="rounded-full mt-8 p-2 pl-4 pr-4 text-[16px] text-[#e61c34] bg-[#ffd4d9] font-medium">Keys backed up successfully 🔐</span>
+						<span className="rounded-full mt-8 p-2 pl-4 pr-4 text-[16px] text-[#e61c34] bg-[#ffd4d9] font-medium">Keys downloaded, please copy to clipboard as well. 🔐</span>
 					}
 					<div className='rounded-md flex mt-12 p-6 bg-[#FFF4E5] w-[90%] md:w-[600px] lg:w-[800px]'>
 						<img src={AlertIcon} alt="alert icon" className="h-[20px] mt-[2px]" />

@@ -311,7 +311,7 @@ const SignUpWrapper = (props) => {
 
 	return (
 		!appLoading && accountTickets !== null ?
-			<div className='mt-[55px] flex flex-col h-full w-full'>
+			<div className='pt-[55px] min-h-[600px] h-full w-full flex flex-col'>
 				{
 					(accountTickets !== 0 && accountsCreatedToday < 100 && !suspended)
 					?

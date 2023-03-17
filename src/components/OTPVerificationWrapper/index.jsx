@@ -69,7 +69,7 @@ const OTPVerificationWrapper = (props) => {
 	}
 
 	return (
-		<div className="mt-[100px] h-full flex flex-col justify-center items-center">
+		<div className="pt-[100px] h-full flex flex-col justify-center items-center">
 			<div className="flex flex-col items-start">
 				<div className="flex items-center justify-center select-none cursor-pointer hover:opacity-50 transition-all" onClick={() => setShowPhoneVerifier(false)}>
 					<img src={BackIcon} alt='back icon' className="h-[30px] pb-[2px] pr-[2px]" />
