@@ -5,7 +5,7 @@ import Button from '../Button'
 import InputField from '../InputField'
 import OTPCodeInput from '../OTPCodeInput'
 import PageLoading from '../PageLoading'
-
+import axios from 'axios'
 const OTPVerificationWrapper = (props) => {
 
 	const { phone, 
@@ -29,6 +29,9 @@ const OTPVerificationWrapper = (props) => {
 		// eslint-disable-next-line
 		setRequestedCodeCount,
 	} = props
+
+	const [checkingPhoneNumber, setCheckingPhoneNumber] = useState(false)
+	const [phoneNumberError, setPhoneNumberError] = useState("")
 
 	const [requestedCodeAgainIn, setRequestedCodeAgainIn] = useState(0)
 
@@ -63,9 +66,29 @@ const OTPVerificationWrapper = (props) => {
 		// eslint-disable-next-line
 	}, [requestedCodeCount])
 
-	const handleRequestOTPCode = () => {
-		setRequestedCodeAgainIn(15)
-		handleRequestCode()
+	const handleRequestOTPCode = async () => {
+		setCheckingPhoneNumber(true)
+		const verifyExistingUser = {
+				url: `${process.env.REACT_APP_API_ENDPOINT}/api/verifyExistingUser`,
+				method: "POST",
+				data: {
+					phoneNumber: phone,
+				},
+				validateStatus: () => true,
+			}
+
+		const verifyExistingUserResponse = (await axios(verifyExistingUser)).data
+		
+		setCheckingPhoneNumber(false)
+		
+		if (verifyExistingUserResponse.success === true) {
+			setRequestedCodeAgainIn(15)
+			handleRequestCode()
+		}else{
+			if(verifyExistingUserResponse.error) {
+				setPhoneNumberError(verifyExistingUserResponse.error)
+			}
+		}
 	}
 
 	return (
@@ -80,7 +103,14 @@ const OTPVerificationWrapper = (props) => {
 					{
 						!codeRequested && !accountCreated
 						?
-							<InputField placeholder='Enter your phone number' className='w-[100%] md:w-[400px] lg:w-[400px] mt-4 mb-2 text-[20px] md:text-[30px] lg:text-[30px]' type='phone' value={phone} onChange={setPhone} disabled={submitting || codeRequested} />
+							<div>
+								<InputField placeholder='Enter your phone number' className='w-[100%] md:w-[400px] lg:w-[400px] mt-4 mb-2 text-[20px] md:text-[30px] lg:text-[30px]' type='phone' value={phone} onChange={setPhone} disabled={submitting || codeRequested} />
+								{phoneNumberError && (
+									<span className={`flex justify-center pr-4 mt-[5px] mb-4 text-[14px] font-medium`} style={{ color: '#dc3545' }}>
+										{phoneNumberError}
+									</span>
+								)}
+							</div>
 							:
 							<OTPCodeInput handleVerifyOpt={handleVerifyOpt} setConfirmationCode={setConfirmationCode}/>
 					}
@@ -88,7 +118,7 @@ const OTPVerificationWrapper = (props) => {
 						!codeRequested && !accountCreated
 						?
 							<div className='relative mt-4 flex flex-col items-center justify-center'>
-								<Button variant='fill' onClick={handleRequestOTPCode} disabled={requestedCodeLimit} loading={submitting}>SEND CODE</Button>
+								<Button variant='fill' onClick={handleRequestOTPCode} disabled={requestedCodeLimit} loading={submitting || checkingPhoneNumber}>SEND CODE</Button>
 								{
 									requestedCodeCount > 0 && requestedCodeAgainIn > 0 &&
 									<span className='mt-4 md:mt-0 lg:mt-0 md:absolute lg:md:absolute right-[-120px] text-[12px] text-gray-400'>Request another <br /> code in {requestedCodeAgainIn}</span>
