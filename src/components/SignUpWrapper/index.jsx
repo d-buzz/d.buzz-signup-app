@@ -6,7 +6,6 @@ import { logEvent } from "firebase/analytics"
 import { useAnalytics, useFunctions } from "reactfire"
 import Button from '../Button'
 import InputField from '../InputField'
-import { isValidPhoneNumber } from 'react-phone-number-input'
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import hive from "@hiveio/hive-js"
@@ -21,7 +20,6 @@ import { useLocation } from 'react-router-dom'
 import PageLoading from '../PageLoading'
 import { isIOS, isSafari } from 'react-device-detect'
 
-import axios from 'axios'
 import ReferrerWrapper from '../ReferrerWrapper'
 
 const SignUpWrapper = (props) => {
@@ -34,8 +32,6 @@ const SignUpWrapper = (props) => {
 		// eslint-disable-next-line
 		setReferrer,
 		account,
-		phone,
-		setPhone,
 		setAccount,
 		suspended,
 		setSuspended,
@@ -163,10 +159,6 @@ const SignUpWrapper = (props) => {
 		// eslint-disable-next-line
 	}, [publicData, ticket, location.search])
 
-	const isValidPhone = () => {
-		return phone ? isValidPhoneNumber(phone) : false
-	}
-
 	const formik = useFormik({
     initialValues: {
       username: account.username,
@@ -178,19 +170,7 @@ const SignUpWrapper = (props) => {
     }),
     onSubmit: async (values) => {
 			setGeneratingAccount(true)
-
-			const verifyExistingUser = {
-				url: `${process.env.REACT_APP_API_ENDPOINT}/api/verifyExistingUser`,
-				method: "POST",
-				data: {
-					phoneNumber: phone,
-				},
-				validateStatus: () => true,
-			}
-
-			const verifyExistingUserResponse = (await axios(verifyExistingUser)).data
-
-      if (confirmed && verifyExistingUserResponse.success === true) {
+        if (confirmed) {
         let password = hive.formatter.createSuggestedPassword()
 
         setAccount({
@@ -229,11 +209,9 @@ const SignUpWrapper = (props) => {
 
         logEvent(analytics, "confirm_account_name")
       } else {
-				if(verifyExistingUserResponse.error) {
-					setError(verifyExistingUserResponse.error)
-					setCurrentPage('error-occurred')
-				}
-			}
+        setError("Something went wrong")
+        setCurrentPage('error-occurred')
+		}
     },
   })
 
@@ -303,7 +281,7 @@ const SignUpWrapper = (props) => {
 			setHelperTextColor('#ff8000')
 		}
 
-		if(!isValidPhone() && !formik.errors.username && formik.values.username !== '') {
+		if(!formik.errors.username && formik.values.username !== '') {
 			setConfirmed(true)
 		}
 		// eslint-disable-next-line
@@ -311,7 +289,7 @@ const SignUpWrapper = (props) => {
 
 	return (
 		!appLoading && accountTickets !== null ?
-			<div className='pt-[55px] min-h-[600px] h-full w-full flex flex-col'>
+			<div className='pt-[55px] min-h-[700px] h-full w-full flex flex-col'>
 				{
 					(accountTickets !== 0 && accountsCreatedToday < 100 && !suspended)
 					?
@@ -374,16 +352,8 @@ const SignUpWrapper = (props) => {
 											)
 										}
 									</span>
-									<InputField
-										placeholder='Enter your phone number'
-										size={18}
-										className='w-[350px] md:w-[400x] lg:w-[400px] mb-4'
-										type='phone'
-										value={phone}
-										onChange={setPhone}
-										disabled={generatingAccount}
-									/>
-									<Button type='submit' className='w-[350px] md:w-[400px] lg:w-[400px]' onClick={() => setGeneratingAccount(true)} variant='fill' loading={generatingAccount} disabled={!isValidPhone() || typingUsername || checkingUsernameAvailability || !isUsernameAvailable || !isUsernameValid}>Continue</Button>
+									
+									<Button type='submit' className='w-[350px] md:w-[400px] lg:w-[400px]' onClick={() => setGeneratingAccount(true)} variant='fill' loading={generatingAccount} disabled={typingUsername || checkingUsernameAvailability || !isUsernameAvailable || !isUsernameValid}>Continue</Button>
 								</Form>
 							</div>
 					</div>

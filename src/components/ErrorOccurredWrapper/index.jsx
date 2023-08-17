@@ -7,7 +7,7 @@ import ActifitLogo from "../../assets/actifit_logo.png"
 const ErrorOccurredWrapper = (props) => {
 
 	const { error } = props
-
+	
 	const getErrorMessage = (err) => {
 		switch(err) {
 			case 'Firebase: Error (auth/invalid-verification-code).':
@@ -40,16 +40,16 @@ const ErrorOccurredWrapper = (props) => {
 				</div>
 				:
 				error &&
-				<div className="flex justify-center">
-					<div className='w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-semibold text-center text-[18px] md:text-[22px] lg:text-[24px]'>{getErrorMessage(error)}</div>
+				<div className="flex flex-col justify-center">
+					<div className='w-[100%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-semibold text-center text-[18px] md:text-[22px] lg:text-[24px]'>{getErrorMessage(error)}</div>
 					<div className="mt-8"/>
-					<div className='w-[80%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-medium text-center text-[14px] md:text-[18px] lg:text-[20px]'>Try other sign up options:</div>
-					<div className="mt-[25px] ml-auto mr-auto w-[80%] md:w-[600px] lg:w-[800px] flex justify-between items-center">
+					<div className='w-[100%] md:w-[600px] lg:w-[800px] mt-4 text-[#e61c34] font-medium text-center text-[18px] md:text-[18px] lg:text-[20px]'>Try other sign up options:</div>
+					<div className="mt-[25px] ml-auto mr-auto w-[95%] md:w-[600px] lg:w-[800px] flex gap-2 justify-between items-center">
 						<div className="overflow-hidden rounded-lg flex flex-col items-center font-bold text-center bg-gray-100 border-[#e61c34] border-[2px]">
-							<img className="m-4 w-[150px] h-[65.38px] bg-gray-700 rounded cursor-pointer" src={HiveOnBoardLogo} alt="hiveonboard" />
-							<p className="pl-4 pr-4 w-full bg-white pt-2 pb-2 text-[18px] md:text-[25px] lg:text-[25px] font-medium">HiveOnBoard</p>
+							<img className="m-4 scale-[0.8] md:scale-1 lg:scale-[1] w-[150px] h-[65.38px] bg-gray-700 rounded cursor-pointer" src={HiveOnBoardLogo} alt="hiveonboard" />
+							<p className="pl-4 pr-4 w-full bg-white pt-2 pb-2 text-[14px] md:text-[25px] lg:text-[25px] font-medium">HiveOnBoard</p>
 							<span className="pl-4 pr-4 flex flex-col">
-								<p className="mb-2 text-[35px] font-extrabold">free</p>
+								<p className="mb-2 text-[18px] md:text-[35px] lg:md:text-[35px] font-extrabold">free</p>
 								<span className="flex flex-col text-[16px] font-normal">
 									<p>Instant</p>
 									<p>Requires verification (email)</p>
@@ -59,10 +59,10 @@ const ErrorOccurredWrapper = (props) => {
 							<a className="mt-4 p-2 w-full bg-[#e61c34] text-white pt-2 pb-2 text-[18px] md:text-[20px] lg:text-[20px]" href="https://hiveonboard.com/create-account?ref=dbuzz">Sign up</a>
 						</div>
 						<div className="overflow-hidden rounded-lg flex flex-col items-center font-bold text-center bg-gray-100 border-[#e61c34] border-[2px]">
-							<img className="m-4 w-[65px] cursor-pointer" src={EcencyIcon} alt="ecency" />
-							<p className="pl-4 pr-4 w-full bg-white pt-2 pb-2 text-[18px] md:text-[25px] lg:text-[25px] font-medium">Ecency</p>
+							<img className="m-4 scale-[0.8] md:scale-1 lg:scale-[1] w-[65px] cursor-pointer" src={EcencyIcon} alt="ecency" />
+							<p className="pl-4 pr-4 w-full bg-white pt-2 pb-2 text-[14px] md:text-[25px] lg:text-[25px] font-medium">Ecency</p>
 							<span className="pl-4 pr-4 flex flex-col">
-								<p className="mb-2 text-[35px] font-extrabold">free / paid</p>
+								<p className="mb-2 text-[16px] md:text-[35px] lg:md:text-[35px] font-extrabold">free / paid</p>
 								<span className="flex flex-col text-[16px] font-normal">
 									<p>Instant</p>
 									<p>Requires verification (email)</p>
@@ -72,10 +72,10 @@ const ErrorOccurredWrapper = (props) => {
 							<a className="mt-4 p-2 w-full bg-[#e61c34] text-white pt-2 pb-2 text-[18px] md:text-[20px] lg:text-[20px]" href="https://ecency.com/signup">Sign up</a>
 						</div>
 						<div className="overflow-hidden rounded-lg flex flex-col items-center font-bold text-center bg-gray-100 border-[#e61c34] border-[2px]">
-							<img className="m-4 w-[65px] cursor-pointer" src={ActifitLogo} alt="actifit" />
-							<p className="pl-4 pr-4 w-full bg-white pt-2 pb-2 text-[18px] md:text-[25px] lg:text-[25px] font-medium">HiveOnBoard</p>
+							<img className="m-4 scale-[0.8] md:scale-1 lg:scale-[1] w-[65px] cursor-pointer" src={ActifitLogo} alt="actifit" />
+							<p className="pl-4 pr-4 w-full bg-white pt-2 pb-2 text-[14px] md:text-[25px] lg:text-[25px] font-medium">HiveOnBoard</p>
 							<span className="pl-4 pr-4 flex flex-col">
-								<p className="mb-2 text-[35px] font-extrabold">$2</p>
+								<p className="mb-2 text-[18px] md:text-[35px] lg:md:text-[35px] font-extrabold">$2</p>
 								<span className="flex flex-col text-[16px] font-normal">
 									<p>Instant</p>
 									<p>Requires verification (email)</p>
