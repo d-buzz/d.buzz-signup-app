@@ -23,47 +23,47 @@ const BackupAccountWrapper = (props) => {
 	} = props
 
 	const auth = useAuth()
-  const functions = useFunctions()
-  const analytics = useAnalytics()
-  const [copiedToClipboard, setCopiedToClipboard] = useState(false)
-  const [keysDownloaded, setKeysDownloaded] = useState(false)
-  const [confirmed, setConfirmed] = useState(false)
-  const [backupConfirmed, setBackupConfirmed] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [showPhoneVerifier, setShowPhoneVerifier] = useState(false)
+	const functions = useFunctions()
+	const analytics = useAnalytics()
+	const [copiedToClipboard, setCopiedToClipboard] = useState(false)
+	const [keysDownloaded, setKeysDownloaded] = useState(false)
+	const [confirmed, setConfirmed] = useState(false)
+	const [backupConfirmed, setBackupConfirmed] = useState(false)
+	const [submitting, setSubmitting] = useState(false)
+	const [showPhoneVerifier, setShowPhoneVerifier] = useState(false)
 	// eslint-disable-next-line
-  const [showKeychainDialog, setShowKeychainDialog] = useState(false)
+	const [showKeychainDialog, setShowKeychainDialog] = useState(false)
 
 
-  const [codeRequested, setCodeRequested] = useState(false)
-  const [confirmationResult, setConfirmationResult] = useState(null)
+	const [codeRequested, setCodeRequested] = useState(false)
+	const [confirmationResult, setConfirmationResult] = useState(null)
 
 	const [canRequestCodeAgain, setCanRequestCodeAgain] = useState(false)
 	const [requestedCodeCount, setRequestedCodeCount] = useState(0)
 	const [requestedCodeLimit, setRequestedCodeLimit] = useState(localStorage.getItem('requestCodeLimit'))
 	const [accountCreated, setAccountCreated] = useState(false)
 
-  const createAccount = httpsCallable(functions, "createAccount")
+	const createAccount = httpsCallable(functions, "createAccount")
 
-  const initializeRecaptcha = () => {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      "create-account",
-      {
-        size: "invisible",
-        callback: function (response) {},
-      },
-      auth
-    )
+	const initializeRecaptcha = () => {
+		window.recaptchaVerifier = new RecaptchaVerifier(
+			"create-account",
+			{
+				size: "invisible",
+				callback: function (response) {},
+			},
+			auth
+		)
 
-    window.recaptchaVerifier.render().then(function (widgetId) {
-      window.recaptchaWidgetId = widgetId
-    })
-  }
+		window.recaptchaVerifier.render().then(function (widgetId) {
+			window.recaptchaWidgetId = widgetId
+		})
+	}
 
-  useEffect(() => {
-    initializeRecaptcha()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+	useEffect(() => {
+		initializeRecaptcha()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	const accountString =
 		`--------------- YOUR ACCOUNT -------------\n` +
@@ -93,20 +93,72 @@ const BackupAccountWrapper = (props) => {
 	}, [copiedToClipboard, keysDownloaded])
 
 	const downloadBackupFile = () => {
-    var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
-    saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt",)
+		var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
+		saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt",)
 		setKeysDownloaded(true)
-  }
-	
+	}
+
 	const copyToClipboard = (text) => {
 		var textField = document.createElement("textarea")
-    textField.innerHTML = text
-    document.body.appendChild(textField)
-    textField.select()
-    document.execCommand("copy")
-    textField.remove()
+		textField.innerHTML = text
+		document.body.appendChild(textField)
+		textField.select()
+		document.execCommand("copy")
+		textField.remove()
 		setCopiedToClipboard(true)
-  }
+	}
+
+	const addAccountToWallet = () => {
+		return new Promise((resolve, reject) => {
+			window.hive_keychain.requestAddAccount(
+				account.username,
+				{
+					active: account.privateKeys.active,
+					posting: account.privateKeys.posting,
+					memo: account.privateKeys.memo,
+				},
+				(response) => {
+					if (!response.success) {
+						reject(response.error.code)
+					} else {
+						resolve(true)
+					}
+				},
+			)
+		})
+	}
+
+	const subscribeOperationJson = JSON.stringify(["unsubscribe", {"community": process.env.REACT_APP_HIVE_COMMUNITY}])
+
+	const subscribeOperation = [
+		[
+			'custom_json',
+			{
+				'required_auths': [],
+				'required_posting_auths': [account.username],
+				'id': 'community',
+				"json": subscribeOperationJson,
+			},
+		],
+	]
+
+	const subscribeAccountToDBuzz = () => {
+		return new Promise((resolve, reject) => {
+			window.hive_keychain.requestBroadcast(
+				account.username,
+				subscribeOperation,
+				'Posting',
+				(response) => {
+					if (!response.success) {
+						console.log(response)
+						reject(response.error.code)
+					} else {
+						resolve(true)
+					}
+				},
+			)
+		})
+	}
 
 	const handleCreateAccount = () => {
 		if (confirmed) {
@@ -116,20 +168,16 @@ const BackupAccountWrapper = (props) => {
 					window.hive_keychain.requestAddAccount
 				) {
 					setShowKeychainDialog(true)
-					window.hive_keychain.requestAddAccount(
-						account.username,
-						{
-							active: account.privateKeys.active,
-							posting: account.privateKeys.posting,
-							memo: account.privateKeys.memo,
-						},
-						function () {
-							setAccountCreated(true)
-							setCurrentPage('account-created')
-						}
-					)
+					addAccountToWallet()
+						.then(() => {
+							subscribeAccountToDBuzz()
+								.then(() => {
+									console.log("Succesfully Subscribed to D.Buzz")
+									setAccountCreated(true)
+									setCurrentPage('account-created')
+								})
+						})
 				} else {
-
 					setAccountCreated(true)
 					setCurrentPage('account-created')
 				}
@@ -142,7 +190,6 @@ const BackupAccountWrapper = (props) => {
 					creator: creator,
 					ticket: ticket,
 				}).then(function (result) {
-					console.log(result);
 					if (result.data.hasOwnProperty("error")) {
 						logEvent(analytics, "create_account_error", {
 							error: result.data.error,
@@ -157,27 +204,24 @@ const BackupAccountWrapper = (props) => {
 							window.hive_keychain.requestAddAccount
 						) {
 							setShowKeychainDialog(true)
-							window.hive_keychain.requestAddAccount(
-								account.username,
-								{
-									active: account.privateKeys.active,
-									posting: account.privateKeys.posting,
-									memo: account.privateKeys.memo,
-								},
-								function () {
-									setAccountCreated(true)
-									setCurrentPage('account-created')
-								}
-							)
+							addAccountToWallet()
+								.then(() => {
+									subscribeAccountToDBuzz()
+										.then(() => {
+											console.log("Succesfully Subscribed to D.Buzz")
+											setAccountCreated(true)
+											setCurrentPage('account-created')
+										})
+								})
 						} else {
 							setAccountCreated(true)
 							setCurrentPage('account-created')
 						}
 					}
 				})
-				.catch((err) => {
-					console.log(err.message)
-				})
+					.catch((err) => {
+						console.log(err.message)
+					})
 			} else {
 				setShowPhoneVerifier(true)
 			}
@@ -190,23 +234,23 @@ const BackupAccountWrapper = (props) => {
 		setConfirmationResult(null)
 		setRequestedCodeCount(0)
 	}
-	
+
 	const handleRequestCode = () => {
 		setError(null)
 		setSubmitting(true)
 		let appVerifier = window.recaptchaVerifier
 
 		console.log(appVerifier);
-		
+
 		signInWithPhoneNumber(auth, "+" + phone, appVerifier)
-		.then(function (result) {
-			// SMS sent. Prompt user to type the code from the message, then sign the
-			// user in with confirmationResult.confirm(code).
-			setRequestedCodeCount(requestedCodeCount+1)
-			setCodeRequested(true)
-			setConfirmationResult(result)
-			setSubmitting(false)
-		})
+			.then(function (result) {
+				// SMS sent. Prompt user to type the code from the message, then sign the
+				// user in with confirmationResult.confirm(code).
+				setRequestedCodeCount(requestedCodeCount+1)
+				setCodeRequested(true)
+				setConfirmationResult(result)
+				setSubmitting(false)
+			})
 			.catch(function (error) {
 				reset()
 				setError(error.message)
@@ -239,20 +283,16 @@ const BackupAccountWrapper = (props) => {
 							window.hive_keychain &&
 							window.hive_keychain.requestAddAccount
 						) {
-							setShowKeychainDialog(true);
-							window.hive_keychain.requestAddAccount(
-								account.username,
-								{
-									active: account.privateKeys.active,
-									posting: account.privateKeys.posting,
-									memo: account.privateKeys.memo,
-								},
-								 () => {
-									setAccountCreated(true)
-									setCurrentPage('account-created')
-									reset()
-								}
-							);
+							setShowKeychainDialog(true)
+							addAccountToWallet()
+								.then(() => {
+									subscribeAccountToDBuzz()
+										.then(() => {
+											console.log("Succesfully Subscribed to D.Buzz")
+											setAccountCreated(true)
+											setCurrentPage('account-created')
+										})
+								})
 						} else {
 							setAccountCreated(true)
 							setCurrentPage('account-created')
@@ -260,11 +300,11 @@ const BackupAccountWrapper = (props) => {
 						}
 					}
 				})
-				.catch((err) => {
-					setError(err.message)
-					setCurrentPage('error-occurred')
-					reset()
-				})
+					.catch((err) => {
+						setError(err.message)
+						setCurrentPage('error-occurred')
+						reset()
+					})
 			})
 			.catch(function (error) {
 				setError(error.message)
@@ -274,7 +314,7 @@ const BackupAccountWrapper = (props) => {
 	}
 
 	return (
-		<div className="pb-12 min-h-full flex flex-col justify-center items-center backup-account-page"> 
+		<div className="pb-12 min-h-full flex flex-col justify-center items-center backup-account-page">
 			{!showPhoneVerifier
 				?
 				<div className="flex flex-col justify-center items-center">
