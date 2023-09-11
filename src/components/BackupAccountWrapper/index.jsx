@@ -93,10 +93,35 @@ const BackupAccountWrapper = (props) => {
 	}, [copiedToClipboard, keysDownloaded])
 
 	const downloadBackupFile = () => {
-    var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
-    saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt",)
-		setKeysDownloaded(true)
-  }
+		// var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
+		// saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt",)
+		// setKeysDownloaded(true)
+		var blob = new Blob([accountString], { type: "text/plain;charset=utf-8" });
+
+		// Convert blob to dataURL
+		var reader = new FileReader();
+		reader.readAsDataURL(blob);
+
+		reader.onloadend = function() {
+			var base64data = reader.result;
+
+			// Create an anchor element
+			var a = document.createElement("a");
+			a.href = base64data;
+			a.download = "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt";
+
+			// Append to body (necessary for Firefox)
+			document.body.appendChild(a);
+
+			// Trigger the download
+			a.click();
+
+			// Cleanup
+			document.body.removeChild(a);
+
+			setKeysDownloaded(true);
+		}
+	}
 	
 	const copyToClipboard = (text) => {
 		var textField = document.createElement("textarea")
