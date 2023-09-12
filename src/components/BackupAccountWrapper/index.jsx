@@ -3,7 +3,6 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth"
 import { httpsCallable } from "firebase/functions"
 import { logEvent } from "firebase/analytics"
 import { useAuth, useFunctions, useAnalytics } from "reactfire"
-import { saveAs } from "file-saver"
 import Button from "../Button"
 import AlertIcon from '../../assets/alert-icon.svg'
 import OTPVerificationWrapper from "../OTPVerificationWrapper"
@@ -93,33 +92,30 @@ const BackupAccountWrapper = (props) => {
 	}, [copiedToClipboard, keysDownloaded])
 
 	const downloadBackupFile = () => {
-		// var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
-		// saveAs(blob, "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt",)
-		// setKeysDownloaded(true)
-		var blob = new Blob([accountString], { type: "text/plain;charset=utf-8" });
+		var blob = new Blob([accountString], { type: "text/plaincharset=utf-8" })
 
 		// Convert blob to dataURL
-		var reader = new FileReader();
-		reader.readAsDataURL(blob);
+		var reader = new FileReader()
+		reader.readAsDataURL(blob)
 
 		reader.onloadend = function() {
-			var base64data = reader.result;
+			var base64data = reader.result
 
 			// Create an anchor element
-			var a = document.createElement("a");
-			a.href = base64data;
-			a.download = "DBUZZ-HIVE-ACOUNT-" + account.username + "-BACKUP.txt";
+			var a = document.createElement("a")
+			a.href = base64data
+			a.download = `DBUZZ-HIVE-ACOUNT-${account.username}-BACKUP.txt`
 
 			// Append to body (necessary for Firefox)
-			document.body.appendChild(a);
+			document.body.appendChild(a)
 
 			// Trigger the download
-			a.click();
+			a.click()
 
 			// Cleanup
-			document.body.removeChild(a);
+			document.body.removeChild(a)
 
-			setKeysDownloaded(true);
+			setKeysDownloaded(true)
 		}
 	}
 	
@@ -167,7 +163,7 @@ const BackupAccountWrapper = (props) => {
 					creator: creator,
 					ticket: ticket,
 				}).then(function (result) {
-					console.log(result);
+					console.log(result)
 					if (result.data.hasOwnProperty("error")) {
 						logEvent(analytics, "create_account_error", {
 							error: result.data.error,
@@ -221,7 +217,7 @@ const BackupAccountWrapper = (props) => {
 		setSubmitting(true)
 		let appVerifier = window.recaptchaVerifier
 
-		console.log(appVerifier);
+		console.log(appVerifier)
 		
 		signInWithPhoneNumber(auth, "+" + phone, appVerifier)
 		.then(function (result) {
@@ -264,7 +260,7 @@ const BackupAccountWrapper = (props) => {
 							window.hive_keychain &&
 							window.hive_keychain.requestAddAccount
 						) {
-							setShowKeychainDialog(true);
+							setShowKeychainDialog(true)
 							window.hive_keychain.requestAddAccount(
 								account.username,
 								{
@@ -277,7 +273,7 @@ const BackupAccountWrapper = (props) => {
 									setCurrentPage('account-created')
 									reset()
 								}
-							);
+							)
 						} else {
 							setAccountCreated(true)
 							setCurrentPage('account-created')
