@@ -1,0 +1,44 @@
+[debug] [2023-05-29T20:17:55.482Z] ----------------------------------------------------------------------
+[debug] [2023-05-29T20:17:55.483Z] Command:       /Users/aashirshaikh/.nvm/versions/node/v16.15.1/bin/node /Users/aashirshaikh/.nvm/versions/node/v16.15.1/bin/firebase deploy
+[debug] [2023-05-29T20:17:55.483Z] CLI Version:   11.18.0
+[debug] [2023-05-29T20:17:55.483Z] Platform:      darwin
+[debug] [2023-05-29T20:17:55.483Z] Node Version:  v16.15.1
+[debug] [2023-05-29T20:17:55.488Z] Time:          Tue May 30 2023 01:17:55 GMT+0500 (Pakistan Standard Time)
+[debug] [2023-05-29T20:17:55.488Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-05-29T20:17:55.489Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2023-05-29T20:17:55.526Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-05-29T20:17:55.526Z] > authorizing via signed-in user (hi@aashir.me)
+[debug] [2023-05-29T20:17:55.526Z] [iam] checking project dbuzz-3a79e for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2023-05-29T20:17:55.527Z] > refreshing access token with scopes: []
+[debug] [2023-05-29T20:17:55.527Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-05-29T20:17:55.527Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-05-29T20:18:07.702Z] ----------------------------------------------------------------------
+[debug] [2023-05-29T20:18:07.703Z] Command:       /Users/aashirshaikh/.nvm/versions/node/v16.15.1/bin/node /Users/aashirshaikh/.nvm/versions/node/v16.15.1/bin/firebase deploy
+[debug] [2023-05-29T20:18:07.703Z] CLI Version:   11.18.0
+[debug] [2023-05-29T20:18:07.703Z] Platform:      darwin
+[debug] [2023-05-29T20:18:07.703Z] Node Version:  v16.15.1
+[debug] [2023-05-29T20:18:07.704Z] Time:          Tue May 30 2023 01:18:07 GMT+0500 (Pakistan Standard Time)
+[debug] [2023-05-29T20:18:07.704Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-05-29T20:18:07.706Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2023-05-29T20:18:07.749Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-05-29T20:18:07.750Z] > authorizing via signed-in user (hi@aashir.me)
+[debug] [2023-05-29T20:18:07.750Z] [iam] checking project dbuzz-3a79e for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2023-05-29T20:18:07.750Z] > refreshing access token with scopes: []
+[debug] [2023-05-29T20:18:07.750Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-05-29T20:18:07.751Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-05-29T20:18:08.767Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-05-29T20:18:08.767Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-05-29T20:18:08.775Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/dbuzz-3a79e:testIamPermissions [none]
+[debug] [2023-05-29T20:18:08.775Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/dbuzz-3a79e:testIamPermissions x-goog-quota-user=projects/dbuzz-3a79e
+[debug] [2023-05-29T20:18:08.775Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/dbuzz-3a79e:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-05-29T20:18:09.058Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2023-05-29T20:18:09.059Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2023-05-29T20:18:11.187Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/dbuzz-3a79e:testIamPermissions 200
+[debug] [2023-05-29T20:18:11.187Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/dbuzz-3a79e:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-05-29T20:18:11.188Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/dbuzz-3a79e/serviceAccounts/dbuzz-3a79e@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2023-05-29T20:18:11.188Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/dbuzz-3a79e/serviceAccounts/dbuzz-3a79e@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2023-05-29T20:18:13.335Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/dbuzz-3a79e/serviceAccounts/dbuzz-3a79e@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2023-05-29T20:18:13.335Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/dbuzz-3a79e/serviceAccounts/dbuzz-3a79e@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2023-05-29T20:18:13.336Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/dbuzz-3a79e [none]

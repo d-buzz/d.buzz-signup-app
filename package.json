@@ -1,0 +1,77 @@
+{
+  "name": "dbuzz-sign-up",
+  "version": "1.4.0",
+  "private": true,
+  "dependencies": {
+    "@hiveio/dhive": "^1.2.3",
+    "@hiveio/hive-js": "^2.0.5",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/user-event": "^13.2.1",
+    "axios": "^1.2.2",
+    "browserslist": "^4.21.4",
+    "clsx": "^1.1.1",
+    "dns-packet": "^5.3.0",
+    "file-saver": "^2.0.5",
+    "firebase": "^9.12.1",
+    "formik": "^2.2.9",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "party-js": "^2.2.0",
+    "patch-package": "^6.5.0",
+    "react": "^18.2.0",
+    "react-device-detect": "^2.2.2",
+    "react-dom": "^18.2.0",
+    "react-phone-number-input": "^3.2.13",
+    "react-router-dom": "^5.3.0",
+    "react-scripts": "5.0.1",
+    "reactfire": "^4.2.2",
+    "source-map-explorer": "^2.5.2",
+    "use-persisted-state": "^0.3.3",
+    "web-vitals": "^2.1.0",
+    "ws": "^8.2.2",
+    "yup": "^0.32.9"
+  },
+  "scripts": {
+    "postinstall": "patch-package",
+    "start": "GENERATE_SOURCEMAP=false react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "autoprefixer": "^10.4.13",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "postcss": "^8.4.20",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "readable-stream": "^4.2.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "tailwindcss": "^3.2.4",
+    "url": "^0.11.0",
+    "yarn-audit-fix": "^9.3.5"
+  }
+}
