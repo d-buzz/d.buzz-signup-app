@@ -128,7 +128,7 @@ const BackupAccountWrapper = (props) => {
 		})
 	}
 
-	const subscribeOperationJson = JSON.stringify(["unsubscribe", {"community": process.env.REACT_APP_HIVE_COMMUNITY}])
+	const subscribeOperationJson = JSON.stringify(["subscribe", {"community": process.env.REACT_APP_HIVE_COMMUNITY}])
 
 	const subscribeOperation = [
 		[
