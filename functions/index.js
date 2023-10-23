@@ -350,6 +350,7 @@ exports.createAccount = functions
         "id": 1
       }
     }
+
     const getDynamicGlobalPropertiesRequest = {
       url: "https://api.deathwing.me/",
       method: "POST",
@@ -640,12 +641,14 @@ exports.claimAccounts = functions.pubsub
       );
 
       let accountsRef = db.collection("accounts");
+
       let query = await accountsRef
         .where("delegation", "==", true)
         .where("timestamp", "<", sixtyDaysAgo)
         .limit(3)
         .get();
 
+      console.log("delegation:" , query);
       query.forEach((element) => {
         try {
           console.log("Removing Delegation: " + element.id);

@@ -47,7 +47,7 @@ const SignUpWrapper = (props) => {
   const firestore = useFirestore()
 
   const checkReputation = httpsCallable(functions, "checkReputation")
-	
+
 	const [accountTickets, setAccountTickets] = useState(null)
 	// eslint-disable-next-line
   const [referrerProfile, setReferrerProfile] = useState({})
@@ -222,7 +222,7 @@ const SignUpWrapper = (props) => {
 
 		const resolve = async () => {
 			let result = await hive.api.lookupAccountNamesAsync([formik.values.username])
-			
+
 			if (_.isEmpty(hive.utils.validateAccountName(formik.values.username))) {
 				setIsUsernameValid(true)
 
@@ -294,10 +294,10 @@ const SignUpWrapper = (props) => {
 					(accountTickets !== 0 && accountsCreatedToday < 100 && !suspended)
 					?
 					<div className='flex flex-col w-full'>
-							<div className="h-[200px] w-full flex flex-col items-center justify-center">
-								<span className="text-[28px] text-gray-900 font-medium">Share the Buzz</span>
-								<span className="text-[18px] text-gray-600 w-[70%] md-w-[100%] lg-w-[100%] text-center">Decentralised & censorship resistant social media.</span>
-							</div>
+						<div className="h-[200px] w-full flex flex-col items-center justify-center">
+							<h1 className="reset-h1 text-gray-900 font-medium">Discover the Buzz</h1>
+							<h2 className="reset-h2 text-gray-600 w-[70%] md:w-[100%] lg:w-[100%] text-center">A community of people just like you.</h2>
+						</div>
 							<div className='flex items-center justify-center'>
 								<img src={DbuzzIcon} alt="dbuzz icon" className='h-[45px]' />
 								<span className='ml-[15px] mr-[15px] w-[80px] border-t-[4px] border-dotted border-[#e61c34]'/>
@@ -319,7 +319,7 @@ const SignUpWrapper = (props) => {
 										label="Username"
 										placeholder='Pick a username'
 										startIcon='@'
-										endIcon={ 
+										endIcon={
 											formik.values.username &&
 											(
 												!typingUsername ?
@@ -352,7 +352,7 @@ const SignUpWrapper = (props) => {
 											)
 										}
 									</span>
-									
+
 									<Button type='submit' className='w-[350px] md:w-[400px] lg:w-[400px]' onClick={() => setGeneratingAccount(true)} variant='fill' loading={generatingAccount} disabled={typingUsername || checkingUsernameAvailability || !isUsernameAvailable || !isUsernameValid}>Continue</Button>
 								</Form>
 							</div>
