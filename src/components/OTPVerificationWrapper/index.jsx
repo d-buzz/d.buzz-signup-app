@@ -7,7 +7,6 @@ import OTPCodeInput from '../OTPCodeInput'
 import PageLoading from '../PageLoading'
 import axios from 'axios'
 
-const OTP_DURATION = 60 * 15; // 15 minutes in seconds
 
 const OTPVerificationWrapper = (props) => {
 
@@ -43,7 +42,7 @@ const OTPVerificationWrapper = (props) => {
 	// added limit for set otp
 	useEffect(() => {
 		if (codeRequested) {
-			setOtpExpiryTimeLeft(OTP_DURATION);
+			setOtpExpiryTimeLeft(process.env.REACT_APP_OTP_DURATION);
 			const otpExpiryInterval = setInterval(() => {
 				setOtpExpiryTimeLeft(prevTime => (prevTime > 0 ? prevTime - 1 : 0));
 			}, 1000);
@@ -99,7 +98,7 @@ const OTPVerificationWrapper = (props) => {
 		if (verifyExistingUserResponse.data.success) {
 			setRequestedCodeAgainIn(15);
 			handleRequestCode();
-			setOtpExpiryTimeLeft(OTP_DURATION);
+			setOtpExpiryTimeLeft(process.env.REACT_APP_OTP_DURATION);
 		} else {
 			setPhoneNumberError(verifyExistingUserResponse.data.error);
 		}
