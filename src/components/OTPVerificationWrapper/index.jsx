@@ -6,13 +6,15 @@ import InputField from '../InputField'
 import OTPCodeInput from '../OTPCodeInput'
 import PageLoading from '../PageLoading'
 import axios from 'axios'
+
+
 const OTPVerificationWrapper = (props) => {
 
-	const { phone, 
+	const { phone,
 		setPhone,
-		handleRequestCode, 
-		setShowPhoneVerifier, 
-		codeRequested, 
+		handleRequestCode,
+		setShowPhoneVerifier,
+		codeRequested,
 		submitting,
 		requestedCodeCount,
 		requestedCodeLimit,
@@ -30,24 +32,20 @@ const OTPVerificationWrapper = (props) => {
 		setRequestedCodeCount,
 	} = props
 
-	const [checkingPhoneNumber, setCheckingPhoneNumber] = useState(false)
-	const [phoneNumberError, setPhoneNumberError] = useState("")
-
-	const [requestedCodeAgainIn, setRequestedCodeAgainIn] = useState(0)
-
-
+	const [checkingPhoneNumber, setCheckingPhoneNumber] = useState(false);
+	const [phoneNumberError, setPhoneNumberError] = useState("");
 	const [otpExpiryTimeLeft, setOtpExpiryTimeLeft] = useState(null);
-
 	const [otpError, setOtpError] = useState("");
+	const [requestedCodeAgainIn, setRequestedCodeAgainIn] = useState(0);
+
 
 	// added limit for set otp
 	useEffect(() => {
 		if (codeRequested) {
-			setOtpExpiryTimeLeft(15);  // Set to 15 minutes in seconds
+			setOtpExpiryTimeLeft(process.env.REACT_APP_OTP_DURATION);
 			const otpExpiryInterval = setInterval(() => {
-				setOtpExpiryTimeLeft(prevTime => prevTime - 1);
+				setOtpExpiryTimeLeft(prevTime => (prevTime > 0 ? prevTime - 1 : 0));
 			}, 1000);
-
 			return () => clearInterval(otpExpiryInterval);
 		}
 	}, [codeRequested]);
@@ -55,69 +53,66 @@ const OTPVerificationWrapper = (props) => {
 	const [showResendLink, setShowResendLink] = useState(false);
 
 	useEffect(() => {
-		if (otpExpiryTimeLeft === 0 && otpExpiryTimeLeft !== null && codeRequested) {
+		if (otpExpiryTimeLeft === 0 && codeRequested) {
 			setOtpError("The OTP has expired. Please request a new one.");
-			setShowResendLink(true); // Show the Resend OTP link once the OTP has expired
+			setShowResendLink(true);
 		}
 	}, [otpExpiryTimeLeft, codeRequested]);
 
 
 	useEffect(() => {
-		const requestCodeLimitDateTime = localStorage.getItem('requestCodeLimitDateTime')
-		const elapsedTime = moment().diff(requestCodeLimitDateTime, 'minutes')
+		const requestCodeLimitDateTime = localStorage.getItem('requestCodeLimitDateTime');
+		const elapsedTime = moment().diff(requestCodeLimitDateTime, 'minutes');
 
-		if(elapsedTime > 15) {
-			localStorage.clear()
+		if (elapsedTime > 15) {
+			localStorage.clear();
 		}
-	}, [])
-
+	}, []);
 
 	useEffect(() => {
-		var timeLeft = 15
-		if(requestedCodeCount > 0 && requestedCodeCount < 3) {
-			const timer = setInterval(() => {
-				timeLeft -= 1
-				setRequestedCodeAgainIn(timeLeft)
-				if(timeLeft === 0){
-					clearInterval(timer)
-				}
-			}, 1000)
-		}
-	}, [requestedCodeCount])
+		const handleCountdown = () => {
+			if (requestedCodeCount > 0 && requestedCodeCount < 3) {
+				setRequestedCodeAgainIn(timeLeft => (timeLeft - 1));
+			}
+		};
+
+		const timer = setInterval(handleCountdown, 1000);
+
+		return () => clearInterval(timer);
+	}, [requestedCodeCount]);
 
 	useEffect(() => {
-		if(requestedCodeCount === 3) {
-			setRequestedCodeLimit(true)
-			localStorage.setItem('requestCodeLimit', 3)
-			localStorage.setItem('requestCodeLimitDateTime', moment().format())
+		if (requestedCodeCount === 3) {
+			setRequestedCodeLimit(true);
+			localStorage.setItem('requestCodeLimit', 3);
+			localStorage.setItem('requestCodeLimitDateTime', moment().format());
 		}
-		// eslint-disable-next-line
-	}, [requestedCodeCount])
+	}, [requestedCodeCount, setRequestedCodeLimit]);
 
 	const handleRequestOTPCode = async () => {
-		setCheckingPhoneNumber(true)
-		const verifyExistingUser = {
-				url: `${process.env.REACT_APP_API_ENDPOINT}/api/verifyExistingUser`,
-				method: "POST",
-				data: {
-					phoneNumber: phone,
-				},
-				validateStatus: () => true,
-			}
+		setCheckingPhoneNumber(true);
+		const verifyExistingUserResponse = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/verifyExistingUser`, { phoneNumber: phone });
 
-		const verifyExistingUserResponse = (await axios(verifyExistingUser)).data
-		
-		setCheckingPhoneNumber(false)
-		
-		if (verifyExistingUserResponse.success === true) {
-			setRequestedCodeAgainIn(15)
-			handleRequestCode()
-		}else{
-			if(verifyExistingUserResponse.error) {
-				setPhoneNumberError(verifyExistingUserResponse.error)
-			}
+		setCheckingPhoneNumber(false);
+
+		if (verifyExistingUserResponse.data.success) {
+			setRequestedCodeAgainIn(15);
+			handleRequestCode();
+			setOtpExpiryTimeLeft(process.env.REACT_APP_OTP_DURATION);
+		} else {
+			setPhoneNumberError(verifyExistingUserResponse.data.error);
 		}
-	}
+	};
+
+	const handleVerify = () => {
+		if (otpExpiryTimeLeft <= 0) {
+			setOtpError("The OTP has expired. Please request a new one.");
+			setShowResendLink(true);
+			localStorage.clear();
+			return; // Return early since the OTP is expired.
+		}
+		handleVerifyOpt();
+	};
 
 	return (
 		<div className="pt-[100px] h-full flex flex-col justify-center items-center">
@@ -130,6 +125,8 @@ const OTPVerificationWrapper = (props) => {
 				</div>
 				<div className="flex flex-col items-center justify-center">
 					<span className="mt-[20px] text-[22px] md:text-[26px] lg:text-[32px] font-bold">One Time Passcode Verification</span>
+
+
 					{!codeRequested && !accountCreated
 						? <div>
 							<InputField placeholder='Enter your phone number'
@@ -144,7 +141,7 @@ const OTPVerificationWrapper = (props) => {
 							)}
 						</div>
 						: <div>
-							<OTPCodeInput handleVerifyOpt={handleVerifyOpt} setConfirmationCode={setConfirmationCode}/>
+							<OTPCodeInput handleVerifyOpt={handleVerify} setConfirmationCode={setConfirmationCode}/>
 							{otpError && (
 								<div className={`flex justify-center pr-4 mt-[5px] mb-4 text-[14px] font-medium`}>
 									<span style={{color: '#dc3545'}}>
@@ -175,9 +172,10 @@ const OTPVerificationWrapper = (props) => {
 								<span className='mt-4 font-medium text-center'>You've already requested code more than 3 times, <br/> please check back later in 30 minutes.</span>
 							}
 						</div>
-						: <Button className='mt-4' variant='fill' onClick={handleVerifyOpt} disabled={submitting}
+						: <Button className='mt-4' variant='fill' onClick={handleVerify} disabled={submitting}
 								  loading={submitting}>VERIFY CODE</Button>
 					}
+
 					{accountCreated &&
 						<PageLoading/>
 					}

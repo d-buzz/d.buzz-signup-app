@@ -146,15 +146,6 @@ code {
   margin-bottom: 100px;
 }
 
-.reset-h1 {
-  font-size: 2em;  /* or whatever the browser default you want is */
-}
-
-.reset-h2 {
-  font-size: 1.5em; /* or whatever the browser default you want is */
-}
-
-
 @media (max-height: 1300px) {
   .backup-account-page {
     margin-top: 100px;
