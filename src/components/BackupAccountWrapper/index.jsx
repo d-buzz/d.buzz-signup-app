@@ -45,6 +45,14 @@ const BackupAccountWrapper = (props) => {
 	const createAccount = httpsCallable(functions, "createAccount")
 
 	const initializeRecaptcha = () => {
+		if (window.recaptchaVerifier) {
+			return; // If it's already initialized, don't try to do it again.
+		}
+
+		if (window.recaptchaWidgetId !== undefined) {
+			window.grecaptcha.reset(window.recaptchaWidgetId);
+		}
+
 		window.recaptchaVerifier = new RecaptchaVerifier(
 			"create-account",
 			{
@@ -52,11 +60,11 @@ const BackupAccountWrapper = (props) => {
 				callback: function (response) {},
 			},
 			auth
-		)
+		);
 
 		window.recaptchaVerifier.render().then(function (widgetId) {
-			window.recaptchaWidgetId = widgetId
-		})
+			window.recaptchaWidgetId = widgetId;
+		});
 	}
 
 	useEffect(() => {
@@ -171,7 +179,6 @@ const BackupAccountWrapper = (props) => {
 				'Posting',
 				(response) => {
 					if (!response.success) {
-						console.log(response)
 						reject(response.error.code)
 					} else {
 						resolve(true)
@@ -241,6 +248,7 @@ const BackupAccountWrapper = (props) => {
 					}
 				})
 					.catch((err) => {
+
 						console.log(err.message)
 					})
 			} else {
@@ -271,8 +279,9 @@ const BackupAccountWrapper = (props) => {
 				setSubmitting(false)
 			})
 			.catch(function (error) {
-				reset()
 				setError(error.message)
+				setSubmitting(false)
+				// reset()
 			})
 	}
 
