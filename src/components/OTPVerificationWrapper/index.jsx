@@ -173,7 +173,7 @@ const OTPVerificationWrapper = (props) => {
 								</span>
 								{canResendOTP && (
 									<div className="mt-4">
-										<span>Did not Receive the code?</span> <a href="#" onClick={handleResendOTP} className="text-red-500">Resend OTP</a>
+										<span>Did not Receive the code?</span> <span onClick={handleResendOTP} className="text-red-500 hover:underline">Resend OTP</span>
 									</div>
 								)}
 							</div>
