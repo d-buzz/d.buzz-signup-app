@@ -8,7 +8,8 @@ import PageLoading from '../PageLoading'
 import axios from 'axios'
 const OTPVerificationWrapper = (props) => {
 
-	const { phone,
+	const {
+		phone,
 		setPhone,
 		handleRequestCode,
 		setShowPhoneVerifier,
@@ -35,6 +36,17 @@ const OTPVerificationWrapper = (props) => {
 
 	const [requestedCodeAgainIn, setRequestedCodeAgainIn] = useState(0)
 
+	const [secondsLeft, setSecondsLeft] = useState(Number(localStorage.getItem('secondsLeft') || 0));
+	const [minutesLeft, setMinutesLeft] = useState(Number(localStorage.getItem('minutesLeft') || 15));
+
+	useEffect(() => {
+		const requestCodeLimitDateTime = localStorage.getItem('requestCodeLimitDateTime');
+		const elapsedTime = moment().diff(requestCodeLimitDateTime, 'minutes');
+		if (elapsedTime > 30) {
+			localStorage.clear();
+		}
+	}, []);
+
 	useEffect(() => {
 		const requestCodeLimitDateTime = localStorage.getItem('requestCodeLimitDateTime')
 		const elapsedTime = moment().diff(requestCodeLimitDateTime, 'minutes')
@@ -56,6 +68,44 @@ const OTPVerificationWrapper = (props) => {
 			}, 1000)
 		}
 	}, [requestedCodeCount])
+	const [canResendOTP, setCanResendOTP] = useState(false);
+
+	useEffect(() => {
+		if (minutesLeft === 0 && secondsLeft === 0) {
+			setCanResendOTP(true);
+		}
+	}, [minutesLeft, secondsLeft]);
+
+	const handleResendOTP = async () => {
+		setCanResendOTP(false);
+		await handleRequestOTPCode();
+		setMinutesLeft(15);
+		setSecondsLeft(0);
+	}
+
+	useEffect(() => {
+		if(codeRequested && (minutesLeft > 0 || secondsLeft > 0)) {
+			const timer = setInterval(() => {
+				if (secondsLeft === 0) {
+					if (minutesLeft === 0) {
+						clearInterval(timer);
+						return;
+					}
+					setMinutesLeft(prevMinutes => prevMinutes - 1);
+					setSecondsLeft(59);
+				} else {
+					setSecondsLeft(prevSeconds => prevSeconds - 1);
+				}
+			}, 1000);
+
+			return () => clearInterval(timer);
+		}
+	}, [minutesLeft, secondsLeft, codeRequested]);
+
+	useEffect(() => {
+		localStorage.setItem('minutesLeft', minutesLeft);
+		localStorage.setItem('secondsLeft', secondsLeft);
+	}, [minutesLeft, secondsLeft]);
 
 	useEffect(() => {
 		if(requestedCodeCount === 3) {
@@ -84,6 +134,8 @@ const OTPVerificationWrapper = (props) => {
 		if (verifyExistingUserResponse.success === true) {
 			setRequestedCodeAgainIn(15)
 			handleRequestCode()
+			setMinutesLeft(15)
+			setSecondsLeft(0)
 		}else{
 			if(verifyExistingUserResponse.error) {
 				setPhoneNumberError(verifyExistingUserResponse.error)
@@ -99,6 +151,7 @@ const OTPVerificationWrapper = (props) => {
 					<span className="pl-2 text-[#e61c34] font-bold">Go back</span>
 				</div>
 				<div className="flex flex-col items-center justify-center">
+
 					<span className="mt-[20px] text-[22px] md:text-[26px] lg:text-[32px] font-bold">One Time Passcode Verification</span>
 					{
 						!codeRequested && !accountCreated
@@ -112,7 +165,18 @@ const OTPVerificationWrapper = (props) => {
 								)}
 							</div>
 							:
-							<OTPCodeInput handleVerifyOpt={handleVerifyOpt} setConfirmationCode={setConfirmationCode}/>
+							<div className="flex flex-col items-center justify-center">
+								<OTPCodeInput handleVerifyOpt={handleVerifyOpt} setConfirmationCode={setConfirmationCode}/>
+
+								<span className={`mt-2 text-[14px] ${minutesLeft === 0 && secondsLeft === 0 ? 'text-red-500' : 'text-gray-400'}`}>
+									Time left: {minutesLeft < 10 ? `0${minutesLeft}` : minutesLeft}:{secondsLeft < 10 ? `0${secondsLeft}` : secondsLeft}
+								</span>
+								{canResendOTP && (
+									<div className="mt-4">
+										<span>Did not Receive the code?</span> <a href="#" onClick={handleResendOTP} className="text-red-500">Resend OTP</a>
+									</div>
+								)}
+							</div>
 					}
 					{
 						!codeRequested && !accountCreated
