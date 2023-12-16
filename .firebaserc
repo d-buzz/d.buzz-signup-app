@@ -1,5 +1,5 @@
 {
   "projects": {
-    "default": "dbuzz-3a79e"
+    "default": "<your firebase project id here"
   }
 }
