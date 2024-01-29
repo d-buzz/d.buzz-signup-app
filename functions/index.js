@@ -341,7 +341,7 @@ exports.createAccount = functions
 
     // calculate 15 HP to RCs
     const getRcAccountRequest = {
-      url: "https://api.deathwing.me/",
+      url: "https://rpc.d.buzz/",
       method: "POST",
       data: {
         "jsonrpc": "2.0",
@@ -523,14 +523,16 @@ exports.updateDailyLimit = functions.pubsub
     }
   });
 
-exports.claimAccounts = functions.pubsub
-  .schedule("every 24 hours")
+exports.claimAccounts = functions
+  .pubsub
+  .schedule("every hour")
   .timeZone("Asia/Manila")
   .onRun(async (context) => {
+  // .https.onRequest(async (data, context) => {
     try {
 
       const getRcAccountRequest = {
-        url: 'https://api.deathwing.me/',
+        url: 'https://rpc.d.buzz/',
         method: 'POST',
         data: {
           "jsonrpc": "2.0",
@@ -553,9 +555,9 @@ exports.claimAccounts = functions.pubsub
         current_pct: (currentMana * 100 / maxMana).toFixed(2),
       }
 
-      const minRCRequiremnet = 12000000000000 // 12 T RC mimimum required for account claiming
+      const RC_COST = 3.54
 
-      if (account.current_pct >= config.rcThreshold && account.current_mana > minRCRequiremnet) {
+      if (account.current_pct >= config.rcThreshold && Math.round(account.current_pct - RC_COST) >= 10) {
         console.log("Claiming accounts for @dbuzz")
         let op = [
           "claim_account",
@@ -566,7 +568,22 @@ exports.claimAccounts = functions.pubsub
           },
         ];
 
-        await client.broadcast.sendOperations([op], key);
+        await client.broadcast.sendOperations([op], key).then(async (res) => {
+          const data = (await axios(getRcAccountRequest)).data.result.rc_accounts[0]
+
+          const currentMana = data.rc_manabar.current_mana
+          const maxMana = data.max_rc
+        
+          const account = {
+            current_pct: (currentMana * 100 / maxMana).toFixed(2),
+          }
+
+          const rcPercentage = account.current_pct
+
+          console.log({
+            rc_percentage: rcPercentage
+          })
+        })
       } else {
         console.log("Not enough RCs to claim an account")
       }
@@ -581,7 +598,7 @@ exports.claimAccounts = functions.pubsub
           .set(
             { accountTickets: accountResponse[0].pending_claimed_accounts },
             { merge: true }
-          );
+          )
       }
 
       // Update creator_instances
@@ -635,53 +652,53 @@ exports.claimAccounts = functions.pubsub
           .set({ creators: creators }, { merge: true });
       }
 
-      // Remove HP delegation after 60 days
-      let sixtyDaysAgo = admin.firestore.Timestamp.fromDate(
-        new Date(Date.now() - 5184000000)
-      );
+    //   // Remove HP delegation after 60 days
+    //   let sixtyDaysAgo = admin.firestore.Timestamp.fromDate(
+    //     new Date(Date.now() - 5184000000)
+    //   );
 
-      let accountsRef = db.collection("accounts");
+    //   let accountsRef = db.collection("accounts");
 
-      let query = await accountsRef
-        .where("delegation", "==", true)
-        .where("timestamp", "<", sixtyDaysAgo)
-        .limit(3)
-        .get();
+    //   let query = await accountsRef
+    //     .where("delegation", "==", true)
+    //     .where("timestamp", "<", sixtyDaysAgo)
+    //     .limit(3)
+    //     .get();
 
-      console.log("delegation:" , query);
-      query.forEach((element) => {
-        try {
-          console.log("Removing Delegation: " + element.id);
+    //   console.log("delegation:" , query);
+    //   query.forEach((element) => {
+    //     try {
+    //       console.log("Removing Delegation: " + element.id);
 
-          client.broadcast
-            .json(
-              {
-                required_auths: [],
-                required_posting_auths: [config.account],
-                id: "rc",
-                json: JSON.stringify([
-                  "delegate_rc",
-                  {
-                    from: config.account,
-                    delegatees: [element.id],
-                    max_rc: 0,
-                  },
-                ]),
-              },
-              key
-            )
-            .then(() => {
-              accountsRef
-                .doc(element.id)
-                .set({ delegation: false }, { merge: true });
-            });
-        } catch (error) {
-          console.log("Removing delegation Error", error);
-          throw new Error(error);
-        }
-      });
+    //       client.broadcast
+    //         .json(
+    //           {
+    //             required_auths: [],
+    //             required_posting_auths: [config.account],
+    //             id: "rc",
+    //             json: JSON.stringify([
+    //               "delegate_rc",
+    //               {
+    //                 from: config.account,
+    //                 delegatees: [element.id],
+    //                 max_rc: 0,
+    //               },
+    //             ]),
+    //           },
+    //           key
+    //         )
+    //         .then(() => {
+    //           accountsRef
+    //             .doc(element.id)
+    //             .set({ delegation: false }, { merge: true });
+    //         });
+    //     } catch (error) {
+    //       console.log("Removing delegation Error", error);
+    //       throw new Error(error);
+    //     }
+    //   });
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       throw new Error(error);
     }
   });
