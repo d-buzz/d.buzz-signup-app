@@ -1,2 +1,2 @@
-export const ticketThreshold = 1000;
+export const ticketThreshold = 750;
 export const rateLimitInSeconds = 0;
